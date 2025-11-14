@@ -17,7 +17,7 @@ public class TheKickerLeft extends SubsystemBase {
     @Override
     public void periodic(){
         if(up){
-            kickLeft.setPosition(.47);
+            kickLeft.setPosition(.43);
         } else {
             kickLeft.setPosition(.65);
         }

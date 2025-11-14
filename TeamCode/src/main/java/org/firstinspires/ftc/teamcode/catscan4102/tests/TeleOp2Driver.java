@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan4102.test;
+package org.firstinspires.ftc.teamcode.catscan4102.tests;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -13,13 +13,13 @@ import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 @TeleOp(name = "interlocking toes")
-public class TeleOp2 extends LinearOpMode {
+public class TeleOp2Driver extends LinearOpMode {
     DcMotor frontRight, frontLeft, backRight, backLeft, intake;
     Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight;
     MotorEx shooterLeft, shooterRight;
     Limelight3A ll;
     private ElapsedTime adjTimer;
-    private boolean aToggle, prevA, rkUp, lkUp;
+    private boolean aToggle, prevA, rkUp, lkUp, lDoor, rDoor;
     private double shooterPower, shooterAdj, adjWaitTime, hoodPos, targetHeight = .4572;
     public void runOpMode() throws InterruptedException {
 
@@ -115,7 +115,7 @@ public class TeleOp2 extends LinearOpMode {
                 rkUp = !rkUp;
 
                 if (rkUp) {
-                    kickRight.setPosition(.52);
+                    kickRight.setPosition(.55);
                 } else if (!rkUp) {
                     kickRight.setPosition(.35);
                 }
@@ -126,7 +126,7 @@ public class TeleOp2 extends LinearOpMode {
                 lkUp = !lkUp;
 
                 if (lkUp) {
-                    kickLeft.setPosition(.47);//up
+                    kickLeft.setPosition(.43);//up
                 } else if (!lkUp) {
                     kickLeft.setPosition(.65); //down
                 }
@@ -152,6 +152,26 @@ public class TeleOp2 extends LinearOpMode {
                 hoodPos = .2;
                 hoodLeft.setPosition(hoodPos);
                 hoodRight.setPosition(hoodPos);
+            }
+
+            //door test
+            if(karelNow.left_trigger > 0 && !(karel.left_trigger > 0)){
+                lDoor = !lDoor;
+                if(lDoor){
+                    sortLeft.setPosition(.80);
+                } else {
+                    sortLeft.setPosition(.45);//up
+                }
+            }
+
+            if(karelNow.right_trigger > 0 && !(karel.right_trigger > 0)){
+                rDoor = !rDoor;
+                if(rDoor){
+                    sortRight.setPosition(.80);
+                } else {
+                    sortRight.setPosition(.45);//up
+                }
+
             }
 
             LLResult result = ll.getLatestResult();

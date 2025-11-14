@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan4102;
+package org.firstinspires.ftc.teamcode.catscan4102.autos;
 
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;

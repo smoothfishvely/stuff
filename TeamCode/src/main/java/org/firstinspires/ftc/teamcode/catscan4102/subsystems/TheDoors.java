@@ -20,15 +20,15 @@ public class TheDoors extends SubsystemBase {
 
     public void periodic(){
         if(leftUp){
-            doorLeft.setPosition(.75);
+            doorLeft.setPosition(.45);//up
         } else {
-            doorLeft.setPosition(.5);
+            doorLeft.setPosition(.85);//down
         }
 
         if(rightUp){
-            doorRight.setPosition(.75);
+            doorRight.setPosition(.45);//up
         } else {
-            doorRight.setPosition(.5);
+            doorRight.setPosition(.80);//down
         }
     }
 }

@@ -21,8 +21,8 @@ import org.firstinspires.ftc.teamcode.catscan4102.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan4102.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan4102.subsystems.TelemetryUtil;
 
-@Autonomous(name="goon")
-public class CloseAuto extends LinearOpMode {
+@Autonomous(name="shooter")
+public class ShootTest extends LinearOpMode {
     private ElapsedTime timer;
     private final Pose startPose = new Pose(25.605, 128.496, Math.toRadians(135));//change start pose
     Bot bot;
@@ -113,30 +113,9 @@ public class CloseAuto extends LinearOpMode {
         CommandScheduler.getInstance().schedule(
                 new RunCommand(() -> bot.follower.update()),
                 new SequentialCommandGroup(
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, path[0]),
-                                new ActivateShooter(bot, 1.067),
-                                new PositionHood(bot, .4)
-                        ),
-                        new WaitCommand(600),
-                        new AutoShoot(bot),
-                        new ParallelCommandGroup(
-                                new ActivateIntake(bot),
-                                new FollowPathCommand(bot.follower, path[1])
-                        ),
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, path[2]),
-                                new ActivateShooter(bot, 1.067)
-                        ),
-                        new WaitCommand(600),
-                        new AutoShoot(bot)
-                        /*
-                        new FollowPathCommand(bot.follower, path[3]),
-                        new FollowPathCommand(bot.follower, path[4]),
-                        new FollowPathCommand(bot.follower, path[5]),
-                        new FollowPathCommand(bot.follower, path[6]),
-                        new FollowPathCommand(bot.follower, path[7])
-                        */
+                        new ActivateShooter(bot, 1.067),
+                        new WaitCommand(2000),
+                        new ActivateShooter(bot)
                 )
         );
     }
