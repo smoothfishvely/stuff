@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan4102.subsystems;
+package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;

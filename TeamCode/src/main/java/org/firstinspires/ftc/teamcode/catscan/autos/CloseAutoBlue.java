@@ -1,10 +1,9 @@
-package org.firstinspires.ftc.teamcode.catscan4102;
+package org.firstinspires.ftc.teamcode.catscan.autos;
 
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
@@ -13,16 +12,17 @@ import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.catscan4102.commands.ActivateIntake;
-import org.firstinspires.ftc.teamcode.catscan4102.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan4102.commands.AutoShoot;
-import org.firstinspires.ftc.teamcode.catscan4102.commands.FollowPathCommand;
-import org.firstinspires.ftc.teamcode.catscan4102.commands.PositionHood;
-import org.firstinspires.ftc.teamcode.catscan4102.subsystems.Bot;
-import org.firstinspires.ftc.teamcode.catscan4102.subsystems.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
+import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
+import org.firstinspires.ftc.teamcode.catscan.commands.AutoShootGPP;
+import org.firstinspires.ftc.teamcode.catscan.commands.FollowPathCommand;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
+import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
+import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
-@Autonomous(name="shooter")
-public class ShootTest extends LinearOpMode {
+//@Autonomous(name="goon")
+public class CloseAutoBlue extends LinearOpMode {
     private ElapsedTime timer;
     private final Pose startPose = new Pose(25.605, 128.496, Math.toRadians(135));//change start pose
     Bot bot;
@@ -35,6 +35,7 @@ public class ShootTest extends LinearOpMode {
                         new BezierLine(new Pose(25.605, 128.496), new Pose(55.909, 95.139))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(140))
+                .setBrakingStrength(.75)
                 .build();
 
         path[1] = bot.follower
@@ -48,6 +49,7 @@ public class ShootTest extends LinearOpMode {
                         )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                .setBrakingStrength(.375)
                 .build();
 
         path[2] = bot.follower
@@ -56,6 +58,7 @@ public class ShootTest extends LinearOpMode {
                         new BezierLine(new Pose(7.679, 79.863), new Pose(55.909, 95.139))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                .setBrakingStrength(.75)
                 .build();
 
         path[3] = bot.follower
@@ -65,18 +68,25 @@ public class ShootTest extends LinearOpMode {
                                 new Pose(55.909, 95.139),
                                 new Pose(58.023, 56.848),
                                 new Pose(59.667, 60.137),
-                                new Pose(9.148, 59.667)
+                                new Pose(0.648, 54.667)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180), .67)
+                .setBrakingStrength(.25)
                 .build();
 
         path[4] = bot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(9.148, 59.667), new Pose(55.909, 95.139))
+                        new BezierCurve(
+                                new Pose(0.648, 54.667),
+                                new Pose(38.37,35.08),
+                                new Pose(57.78, 71.647),
+                                new Pose(55.909, 95.139)
+                        )
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                .setBrakingStrength(.75)
                 .build();
 
         path[5] = bot.follower
@@ -86,18 +96,20 @@ public class ShootTest extends LinearOpMode {
                                 new Pose(55.909, 95.139),
                                 new Pose(56.613, 36.646),
                                 new Pose(59.902, 34.532),
-                                new Pose(9.148, 35.706)
+                                new Pose(0.648, 32.706)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(180), .67)
+                .setBrakingStrength(.375)
                 .build();
 
         path[6] = bot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(9.148, 35.706), new Pose(55.909, 95.139))
+                        new BezierLine(new Pose(0.648, 32.706), new Pose(55.909, 95.139))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(40))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(140))
+                .setBrakingStrength(.75)
                 .build();
 
         path[7] = bot.follower
@@ -106,6 +118,7 @@ public class ShootTest extends LinearOpMode {
                         new BezierLine(new Pose(55.909, 95.139), new Pose(33.122, 76.346))
                 )
                 .setLinearHeadingInterpolation(Math.toRadians(140), Math.toRadians(135))
+                .setBrakingStrength(.75)
                 .build();
     }
 
@@ -113,9 +126,6 @@ public class ShootTest extends LinearOpMode {
         CommandScheduler.getInstance().schedule(
                 new RunCommand(() -> bot.follower.update()),
                 new SequentialCommandGroup(
-                        new ActivateShooter(bot, 1.067),
-                        new WaitCommand(2000),
-                        new ActivateShooter(bot)
                 )
         );
     }

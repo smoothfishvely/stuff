@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan4102.commands;
+package org.firstinspires.ftc.teamcode.catscan.commands;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.Path;

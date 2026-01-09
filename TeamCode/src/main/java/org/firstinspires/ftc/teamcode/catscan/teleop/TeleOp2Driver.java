@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.catscan4102.tests;
+package org.firstinspires.ftc.teamcode.catscan.teleop;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -12,7 +11,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
-@TeleOp(name = "interlocking toes")
+//@TeleOp(name = "interlocking toes")
 public class TeleOp2Driver extends LinearOpMode {
     DcMotor frontRight, frontLeft, backRight, backLeft, intake;
     Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight;
@@ -21,6 +20,8 @@ public class TeleOp2Driver extends LinearOpMode {
     private ElapsedTime adjTimer;
     private boolean aToggle, prevA, rkUp, lkUp, lDoor, rDoor;
     private double shooterPower, shooterAdj, adjWaitTime, hoodPos, targetHeight = .4572;
+    private double rkd = .51, rku = .8; //increase to make kicker go down
+    private double lkd = .42, lku = .72;
     public void runOpMode() throws InterruptedException {
 
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
@@ -31,8 +32,8 @@ public class TeleOp2Driver extends LinearOpMode {
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         shooterLeft = new MotorEx(hardwareMap, "shooterLeft");
         shooterRight = new MotorEx(hardwareMap, "shooterRight");
-        kickLeft = hardwareMap.get(Servo.class, "kickerLeft");
-        kickRight = hardwareMap.get(Servo.class, "kickerRight");
+        kickRight = hardwareMap.get(Servo.class, "kickerLeft");
+        kickLeft = hardwareMap.get(Servo.class, "kickerRight");
         hoodLeft = hardwareMap.get(Servo.class, "hoodLeft");
         hoodRight = hardwareMap.get(Servo.class, "hoodRight");
         sortLeft = hardwareMap.get(Servo.class, "sortLeft");
@@ -112,49 +113,61 @@ public class TeleOp2Driver extends LinearOpMode {
 
             //left kicker
             if (karelNow.left_bumper && !karel.left_bumper) {
-                rkUp = !rkUp;
+                lkUp = !lkUp;
 
-                if (rkUp) {
-                    kickRight.setPosition(.55);
-                } else if (!rkUp) {
-                    kickRight.setPosition(.35);
+                if (lkUp) {
+                    kickLeft.setPosition(lku);
+                } else if (!lkUp) {
+                    kickLeft.setPosition(lkd);
                 }
             }
 
             //right kicker
             if (karelNow.right_bumper && !karel.right_bumper) {
-                lkUp = !lkUp;
+                rkUp = !rkUp;
 
-                if (lkUp) {
-                    kickLeft.setPosition(.43);//up
-                } else if (!lkUp) {
-                    kickLeft.setPosition(.65); //down
+                if (rkUp) {
+                    kickRight.setPosition(rku);
+                } else if (!rkUp) {
+                    kickRight.setPosition(rkd);
                 }
             }
 
             if (gamepad1.b) {
                 intake.setPower(1);
+            } else if (gamepad2.a){
+                intake.setPower(-1);
             } else {
                 intake.setPower(0);
             }
 
+
             if (gamepad1.dpad_left) {
                 hoodPos += .02;
-                hoodLeft.setPosition(hoodPos);
-                hoodRight.setPosition(hoodPos);
+                hoodLeft.setPosition(hoodPos -.1);
+                hoodRight.setPosition(hoodPos+.15);
             } else if (gamepad1.dpad_right && hoodPos != .2) {
                 hoodPos -= .02;
-                hoodLeft.setPosition(hoodPos);
-                hoodRight.setPosition(hoodPos);
+                hoodLeft.setPosition(hoodPos -.1);
+                hoodRight.setPosition(hoodPos +.15);
             }
 
             if (gamepad1.y) {
                 hoodPos = .2;
-                hoodLeft.setPosition(hoodPos);
-                hoodRight.setPosition(hoodPos);
+                hoodLeft.setPosition(hoodPos-.1);
+                hoodRight.setPosition(hoodPos+.15);
+                shooterPower = 1.1;
+            }
+
+            if (gamepad1.x) {
+                hoodPos = .6;
+                hoodLeft.setPosition(hoodPos-.1);
+                hoodRight.setPosition(hoodPos+.15);
+                shooterPower = 1.45;
             }
 
             //door test
+            /*
             if(karelNow.left_trigger > 0 && !(karel.left_trigger > 0)){
                 lDoor = !lDoor;
                 if(lDoor){
@@ -171,22 +184,33 @@ public class TeleOp2Driver extends LinearOpMode {
                 } else {
                     sortRight.setPosition(.45);//up
                 }
+            }*/
 
+            //fix kicker
+            if(karelNow.left_trigger > 0 && !(karel.left_trigger > 0)){
+                rkd -= .03;
+                rku -=.03;
+            }
+
+            if(karelNow.right_trigger > 0 && !(karel.right_trigger > 0)) {
+                lku += .03;
+                lkd += .03;
             }
 
             LLResult result = ll.getLatestResult();
             double tyRad = Math.toRadians(result.getTy());
             double llDistance = (targetHeight/Math.tan(tyRad));
 
-            telemetry.addLine("Pipeline: "+pipeline);
-            telemetry.addData("target offset (degrees):", result.getTx());
-            telemetry.addData("absolute target distance: (meters)", llDistance);
+            //telemetry.addLine("Pipeline: "+pipeline);
+            //telemetry.addData("target offset (degrees):", result.getTx());
+            //telemetry.addData("absolute target distance: (meters)", llDistance);
             telemetry.addData("Velocity: ", shooterLeft.getVelocity());
-            telemetry.addData("Corrected Velocity: ", shooterLeft.getCorrectedVelocity());
             telemetry.addData("Motor Power: ", shooterPower);
             telemetry.addData("Hood Position: ", hoodPos);
             telemetry.addData("Left Kicker Up: ", lkUp);
             telemetry.addData("Right Kicker Up: ", rkUp);
+            telemetry.addData("lkicker dpos: ", lkd);
+            telemetry.addData("rkicker dpos: ", rkd);
             telemetry.update();
         }
     }

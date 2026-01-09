@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan4102.autos;
+package org.firstinspires.ftc.teamcode.catscan.autos;
 
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -8,12 +8,19 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 
-import org.firstinspires.ftc.teamcode.catscan4102.commands.FollowPathCommand;
-import org.firstinspires.ftc.teamcode.catscan4102.subsystems.Bot;
-import org.firstinspires.ftc.teamcode.catscan4102.subsystems.TelemetryUtil;
+import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
+import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
+import org.firstinspires.ftc.teamcode.catscan.commands.AutoShootGPP;
+import org.firstinspires.ftc.teamcode.catscan.commands.FollowPathCommand;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
+import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
+import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Autonomous(name="e goon")
 public class FarAuto extends LinearOpMode {
@@ -26,51 +33,51 @@ public class FarAuto extends LinearOpMode {
         path[0] = bot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(55.909, 8.222), new Pose(61.312, 20.202))
+                        new BezierLine(new Pose(55.909, 8.222), new Pose(53.6712, 20.202))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(115))
+                .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(114))
                 .build();
 
         path[1] = bot.follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(61.312, 20.202),
+                                new Pose(53.6712, 20.202),
                                 new Pose(58.258, 35.471),
                                 new Pose(74.467, 36.646),
-                                new Pose(17.148, 35.706)
+                                new Pose(-10.148, 35.706)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(115), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(114), Math.toRadians(180))
                 .build();
 
         path[2] = bot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(17.148, 35.706), new Pose(61.312, 20.437))
+                        new BezierLine(new Pose(-10.148, 35.706), new Pose(53.312, 20.437))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(115))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(114))
                 .build();
 
         path[3] = bot.follower
                 .pathBuilder()
                 .addPath(
                         new BezierCurve(
-                                new Pose(61.312, 20.437),
+                                new Pose(53.312, 20.437),
                                 new Pose(60.842, 65.540),
                                 new Pose(70.708, 57.318),
-                                new Pose(17.148, 59.902)
+                                new Pose(-10.148, 59.902)
                         )
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(115), Math.toRadians(180))
+                .setLinearHeadingInterpolation(Math.toRadians(114), Math.toRadians(180))
                 .build();
 
         path[4] = bot.follower
                 .pathBuilder()
                 .addPath(
-                        new BezierLine(new Pose(17.148, 59.902), new Pose(61.312, 20.437))
+                        new BezierLine(new Pose(-10.148, 59.902), new Pose(53.312, 20.437))
                 )
-                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(115))
+                .setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(114))
                 .build();
 
         path[5] = bot.follower
@@ -107,14 +114,45 @@ public class FarAuto extends LinearOpMode {
         CommandScheduler.getInstance().schedule(
                 new RunCommand(() -> bot.follower.update()),
                 new SequentialCommandGroup(
-                        new FollowPathCommand(bot.follower, path[0]),
-                        new FollowPathCommand(bot.follower, path[1]),
+                        new ParallelCommandGroup(
+                                new ActivateShooter(bot, 1.3),
+                                new FollowPathCommand(bot.follower, path[0])//go to shoot
+                                //new PositionHood(bot, .65)
+                        ),
+                        new WaitCommand(1000),
+                        new AutoShootGPP(bot),
+                        new ParallelCommandGroup(
+                            new PositionDoors(bot, false, true),
+                            new ActivateIntake(bot),
+                            new FollowPathCommand(bot.follower, path[1])
+                        ),//go to pick up
+                        new WaitCommand(400), //3 balls in bot
+                        new ParallelCommandGroup(
+                                new ActivateShooter(bot, 1.3),
+                                new FollowPathCommand(bot.follower, path[2])//go to shoot
+                        ),
+                        new WaitCommand(750),
+                        new AutoShootGPP(bot), //3 balls scored (6 total)
+                        new ParallelCommandGroup(
+                                new PositionDoors(bot, false, true),
+                                new FollowPathCommand(bot.follower, path[3])
+                        ),//go to pick up
+                        new WaitCommand(400), //3 balls in bot
+                        new ParallelCommandGroup(
+                                new ActivateShooter(bot, 1.3),
+                                new FollowPathCommand(bot.follower, path[4])//go to shoot
+                        ),
+                        new WaitCommand(750),
+                        new AutoShootGPP(bot) //3 balls scored (9 total)
+                        /*
                         new FollowPathCommand(bot.follower, path[2]),
                         new FollowPathCommand(bot.follower, path[3]),
                         new FollowPathCommand(bot.follower, path[4]),
                         new FollowPathCommand(bot.follower, path[5]),
                         new FollowPathCommand(bot.follower, path[6]),
                         new FollowPathCommand(bot.follower, path[7])
+
+                         */
                 )
         );
     }
