@@ -9,7 +9,7 @@ public class TheShooter extends SubsystemBase {
     public TheShooter(MotorEx shooterLeft, MotorEx shooterRight){
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
-        shooterPower = .98;
+        shooterPower = 1;
     }
 
     public double getShooterPower(){
@@ -32,12 +32,13 @@ public class TheShooter extends SubsystemBase {
         shooterPower = power;
     }
 
+
     public void add(){
-        shooterPower += .02;
+        shooterPower += .05;
     }
 
     public void subtract(){
-        shooterPower -= .02;
+        shooterPower -= .05;
     }
 
     @Override
