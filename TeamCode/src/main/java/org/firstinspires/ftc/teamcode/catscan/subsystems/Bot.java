@@ -36,7 +36,12 @@ public class Bot {
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
     public boolean teleOp;
     private int motif;
-
+    public static double kp = .75;
+    public static double ki = 0;
+    public static double kd = .4;
+    public static double ks = 0.92;
+    public static double kv = 0.47;
+    public static double ka = 0.3;
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
 //        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
@@ -63,10 +68,10 @@ public class Bot {
         intake.setDirection(DcMotor.Direction.REVERSE);
         shooterLeft.setRunMode(Motor.RunMode.VelocityControl);
         shooterRight.setRunMode(Motor.RunMode.VelocityControl);
-        shooterRight.setVeloCoefficients(0.467, 0.000067, 0.32);
-        shooterLeft.setVeloCoefficients(0.467, 0.000067, 0.32);
-        shooterRight.setFeedforwardCoefficients(0.92, 0.47, 0.3);
-        shooterLeft.setFeedforwardCoefficients(0.92, 0.47, 0.3);
+        shooterRight.setVeloCoefficients(kp, ki, kd);
+        shooterLeft.setVeloCoefficients(kp, ki, kd);
+        shooterRight.setFeedforwardCoefficients(ks, kv, ka);
+        shooterLeft.setFeedforwardCoefficients(ks, kv, ka);
         shooterLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooterRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
 //        Gamepad karel = new Gamepad();
@@ -83,7 +88,7 @@ public class Bot {
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
 //        ll = new TheLimelight(limelight);
-        CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter);
+        CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
 //        limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
 //            ((SwitchableLight)colorSensor).enableLight(true);
@@ -102,6 +107,8 @@ public class Bot {
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
+        TelemetryUtil.addData("hood left", hoodLeft.getPosition());
+        TelemetryUtil.addData("hood right", hoodRight.getPosition());
         TelemetryUtil.update();
         follower.update();
     }

@@ -15,7 +15,6 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
-import com.bylazar.telemetry.PanelsTelemetry;
 
 
 //2shooter door, 2clutch, 2intake retract
@@ -82,6 +81,10 @@ public class TeleOp2 extends LinearOpMode {
         waitForStart();
         //ll.start();
         while(opModeIsActive()){
+            shooterRight.setVeloCoefficients(kp, ki, kd);
+            shooterLeft.setVeloCoefficients(kp, ki, kd);
+            shooterRight.setFeedforwardCoefficients(ks, kv, ka);
+            shooterLeft.setFeedforwardCoefficients(ks, kv, ka);
             karel.copy(karelNow);
             karelNow.copy(gamepad1);
             double y = gamepad2.left_stick_y;
@@ -100,31 +103,35 @@ public class TeleOp2 extends LinearOpMode {
                 shootOn = !shootOn;
                 if(!shootOn) {
                     vel = 0;
+                    transfer.setPower(0);
+                    shootDoorLeft.setPosition(.3);
+                    shootL = false;
+                    transOn = false;
                 }
             } else if(karelNow.dpad_up && !karel.dpad_up){
-                vel += .05;
+                vel += .02;
                 shootOn = true;
             } else if(karelNow.dpad_down && !karel.dpad_down){
-                vel -= .05;
+                vel -= .02;
                 shootOn = true;
             }
             if(karelNow.left_trigger > 0){
-                vel = 1.13;
+                vel = .98;
                 hoodPosL = .41;
                 hoodPosR = .6;
                 shootOn = true;
                 hoodLeft.setPosition(hoodPosL);
                 hoodRight.setPosition(hoodPosR);
             } else if(karelNow.right_trigger > 0){
-                vel = 1.13;
+                vel = 1.3;
                 hoodPosL = .45;
                 hoodPosR = .56;
                 shootOn = true;
                 hoodLeft.setPosition(hoodPosL);
                 hoodRight.setPosition(hoodPosR);
             }
-            shooterRight.set(vel);
-            shooterLeft.set(vel);
+            shooterRight.setVelocity(vel);
+            shooterLeft.setVelocity(vel);
             if(karelNow.b && !karel.b){
                 transOn = !transOn;
                 if(transOn){
@@ -174,6 +181,7 @@ public class TeleOp2 extends LinearOpMode {
                 }
             }
             telemetry.addData("hood left", hoodLeft.getPosition());
+            telemetry.addData("hood right", hoodRight.getPosition());
             telemetry.addData("velocity", shooterLeft.getVelocity());
             telemetry.addData("target v", vel);
             tm.debug("hood left", hoodLeft.getPosition());

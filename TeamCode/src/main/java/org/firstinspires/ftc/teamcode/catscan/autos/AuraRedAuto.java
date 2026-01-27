@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.catscan.autos;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeading;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootX;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootY;
@@ -16,28 +14,25 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
-import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
+
 @Autonomous
-public class CloseSideAutoBlueR extends LinearOpMode {
-    public static Pose startPose = new Pose(startX, startY, Math.toRadians(startHeading)); //fix
+public class AuraRedAuto extends LinearOpMode {
+    public static Pose startPose = new Pose(118.440, 127.580, Math.toRadians(45)); //fix
     public static Pose shootPose = new Pose(shootX, shootY, Math.toRadians(shootHeading));
     Bot bot;
-    public Paths paths;
+    public AuraRedAuto.Paths paths;
     public static class Paths {
         public PathChain Path1;
         public PathChain Path2;
@@ -51,83 +46,88 @@ public class CloseSideAutoBlueR extends LinearOpMode {
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    startPose,
-                                    shootPose
+                                    new Pose(118.440, 127.580),
+
+                                    new Pose(90.100, 95.680)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(shootHeading))
-                    .setBrakingStrength(0.7)
+                    ).setLinearHeadingInterpolation(Math.toRadians(45), Math.toRadians(40))
+
                     .build();
 
             Path2 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    shootPose,
-                                    new Pose(53.23, 83.02),
-                                    new Pose(63.73, 84.89),
-                                    new Pose(15, 84)
+                                    new Pose(90.100, 95.680),
+                                    new Pose(90.770, 83.020),
+                                    new Pose(80.210, 84.890),
+                                    new Pose(129.000, 84.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0), .6)
                     .setBrakingStrength(0.7)
+
                     .build();
 
             Path3 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(15, 84),
-                                    new Pose(71.76, 80.66),
-                                    new Pose(17.35, 71.06)
+                                    new Pose(129.000, 84.000),
+                                    new Pose(72.240, 80.670),
+                                    new Pose(126.650, 71.060)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
 
             Path4 = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(15, 84),
+                                    new Pose(126.650, 71.060),
 
-                                    shootPose
+                                    new Pose(90.100, 95.680)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
 
                     .build();
 
             Path5 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    shootPose,
-                                    new Pose(52.53, 54.17),
-                                    new Pose(61.68, 59.85),
-                                    new Pose(10.31, 59.3)
+                                    new Pose(90.100, 95.680),
+                                    new Pose(91.470, 54.170),
+                                    new Pose(82.320, 59.800),
+                                    new Pose(133.690, 59.300)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0), .6)
                     .setBrakingStrength(0.7)
+
                     .build();
 
             Path6 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(10.3, 59.3),
-                                    new Pose(54.8, 60.5),
-                                    shootPose
+                                    new Pose(133.690, 59.300),
+                                    new Pose(89.200, 60.500),
+                                    new Pose(90.100, 95.680)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(40))
+
 
                     .build();
 
             Path7 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    shootPose,
-                                    new Pose(53, 37.75),
-                                    new Pose(59.8, 34),
-                                    new Pose(9.14, 35.64)
+                                    new Pose(90.100, 95.680),
+                                    new Pose(91.000, 37.750),
+                                    new Pose(84.200, 34.000),
+                                    new Pose(134.860, 35.640)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(40), Math.toRadians(0), .6)
                     .setBrakingStrength(0.7)
+
                     .build();
 
             Path8 = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(9.14, 35.64),
-                                    new Pose(53.70, 54.17),
-                                    new Pose(57.45, 104.365)
+                                    new Pose(134.860, 35.640),
+                                    new Pose(90.300, 54.170),
+                                    new Pose(86.550, 104.360)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(146))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(35))
                     .build();
         }
     }
@@ -137,10 +137,10 @@ public class CloseSideAutoBlueR extends LinearOpMode {
         TelemetryUtil.setup(telemetry);
         CommandScheduler.getInstance().reset();
         bot = new Bot(hardwareMap, startPose, false);
-        paths = new Paths(bot.follower);
+        paths = new AuraRedAuto.Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                    new PositionHood(bot, .41, .6 )
+                        new PositionHood(bot, .41, .6 )
                 )
         );
         while(opModeInInit()){
@@ -173,10 +173,8 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                         new FollowPathCommand(bot.follower, paths.Path7),
                         new FollowPathCommand(bot.follower, paths.Path8),
                         new Shoot(bot)
-
                 )
         );
     }
-
-
 }
+

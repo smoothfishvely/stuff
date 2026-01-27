@@ -9,13 +9,11 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 public class Shoot extends SequentialCommandGroup {
     public Shoot(Bot bot){
         addCommands(
-                new ParallelCommandGroup(
-                        new ActivateShooter(bot),
-                        new ActivateTransfer(bot)
-                ),
-                new WaitCommand(200),
-                new PositionSDLeft(bot)
-        );
-        addRequirements(bot.shooter, bot.shooterDoors);
+                new WaitCommand(500),
+                new ActivateTransfer(bot),//on
+                new WaitCommand(2250),
+                new ActivateTransfer(bot)//off
+       );
+        addRequirements(bot.shooter, bot.shooterDoors, bot.theTransfer);
     }
 }

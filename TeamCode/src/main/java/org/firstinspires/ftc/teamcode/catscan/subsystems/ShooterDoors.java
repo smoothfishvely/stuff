@@ -13,13 +13,13 @@ public class ShooterDoors extends SubsystemBase {
         this.shootDoorRight = shootDoorRight;
     }
 
-    public void shootLeft(){
-        shootL = !shootL;
-        if (shootL) {
+    public void shootLeft(boolean open){
+        if (!open) {
             shootDoorLeft.setPosition(.3);
         } else {
             shootDoorLeft.setPosition(.05);
         }
+        TelemetryUtil.addData("Hsoidfhiosdhfosdif ", open);
     }
     public void shootRight(){
         shootR = !shootR;
