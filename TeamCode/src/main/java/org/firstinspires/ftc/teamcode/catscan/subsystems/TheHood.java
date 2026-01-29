@@ -12,19 +12,19 @@ public class TheHood extends SubsystemBase {
     public TheHood (Servo hoodLeft, Servo hoodRight) {
         this.hoodLeft = hoodLeft;
         this.hoodRight = hoodRight;
-        hoodPosL = 0.4;
-        hoodPosR = .61;
+        hoodPosL = .41;
+        hoodPosR = .6;
         setPos(hoodPosL, hoodPosR);
     }
 
     public void up(){
-        hoodPosL += .05;
-        hoodPosR -= .05;
+        hoodPosL += .02;
+        hoodPosR -= .02;
     }
 
     public void down(){
-        hoodPosL -= .05;
-        hoodPosR += .05;
+        hoodPosL -= .02;
+        hoodPosR += .02;
     }
 
     public double getPos(){

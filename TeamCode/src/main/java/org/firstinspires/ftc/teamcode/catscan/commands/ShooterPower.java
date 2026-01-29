@@ -28,7 +28,7 @@ public class ShooterPower extends InstantCommand {
                 bot.shooter.subtract();
             }
         } else {
-            bot.shooter.setPower(power);
+            bot.shooter.setVelocity(power);
         }
     }
 }

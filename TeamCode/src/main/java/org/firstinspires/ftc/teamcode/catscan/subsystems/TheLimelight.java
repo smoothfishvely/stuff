@@ -13,7 +13,7 @@ public class TheLimelight extends SubsystemBase {
     Limelight3A limelight;
     private int motifId;
     private double ty, tx;
-    private double llHeightCM = 39.399972;
+    private double targetHeight = .3429;
     private static double aimTolerance = 0.5;
     private static double aimKp = 0; //tune pids
     private static double aimKI = 0;
@@ -28,6 +28,7 @@ public class TheLimelight extends SubsystemBase {
     private final ElapsedTime aimTimer = new ElapsedTime();
     public TheLimelight(Limelight3A limelight){
         this.limelight = limelight;
+        result = limelight.getLatestResult();
     }
 
     public int getMotif(){
@@ -37,8 +38,6 @@ public class TheLimelight extends SubsystemBase {
     public double getTy() {return ty;}
 
     public double getTx() {return tx;}
-
-
 
     public double AimPID() {
         if (result.isValid()) {
@@ -75,24 +74,20 @@ public class TheLimelight extends SubsystemBase {
     @Override
     public void periodic(){
         result = limelight.getLatestResult();
-        if(result.isValid()) {
-            List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
-            for (LLResultTypes.FiducialResult fr : fiducialResults) {
-                motifId = fr.getFiducialId();
-                ty = fr.getTargetYDegrees();
-                tx = fr.getTargetXDegrees();
-            }
-        } else {
+        List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
+        for (LLResultTypes.FiducialResult fr : fiducialResults) {
+            motifId = fr.getFiducialId();
+            //ty = fr.getTargetYDegrees();
+            //tx = fr.getTargetXDegrees();
+        }
+        ty = result.getTy();
+        tx = result.getTx();
+        if(!result.isValid()){
             TelemetryUtil.addData("ll result invalid");
         }
     }
     public double getGoalDistanceCM() {
-        if (result.isValid()) {
-            return ((llHeightCM - 74.93) / (Math.tan(ty)));
-        }
-        else {
-            return 172;
-        }
+        return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
     }
     //need to calculate coefficients for power and stuff
     /*public double distanceBasedVelocity() {

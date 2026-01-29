@@ -18,16 +18,7 @@ public class ActivateShooter extends InstantCommand {
         power = 0;
     }
 
-    public ActivateShooter(Bot bot, boolean on){
-        this.bot = bot;
-        power = 0;
-        this.on = on;
-    }
-
     public void initialize(){
-        if(power != 0) {
-            bot.shooter.setPower(power);
-        }
-        bot.shooter.setOn();
+        bot.shooter.setVelocity(power);
     }
 }

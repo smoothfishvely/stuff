@@ -32,12 +32,12 @@ public class TeleOp2 extends LinearOpMode {
     GraphManager gm;
     double hoodPosL = .2, hoodPosR = .81;
     public static double vel = 0;
-    public static double kp = .75;
+    public static double kp = 0.25;
     public static double ki = 0;
-    public static double kd = .4;
-    public static double ks = 0.92;
-    public static double kv = 0.47;
-    public static double ka = 0.3;
+    public static double kd = 0;
+    public static double ks = 232;
+    public static double kv = 1.03;
+    public static double ka = 0;
     boolean shootOn, transOn, shootL, shootR, intOn;
     @Override
     public void runOpMode() throws InterruptedException {

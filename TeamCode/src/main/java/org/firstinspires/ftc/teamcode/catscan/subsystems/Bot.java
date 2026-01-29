@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -18,6 +19,7 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
+@Configurable
 public class Bot {
     public DcMotorEx frontRight, frontLeft, backRight, backLeft, intake, transfer;
     public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight ;
@@ -36,12 +38,12 @@ public class Bot {
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
     public boolean teleOp;
     private int motif;
-    public static double kp = .75;
+    public static double kp = 1.3;
     public static double ki = 0;
-    public static double kd = .4;
-    public static double ks = 0.92;
-    public static double kv = 0.47;
-    public static double ka = 0.3;
+    public static double kd = 1.25;
+    public static double ks = 232;
+    public static double kv = 1.2;
+    public static double ka = 0;
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
 //        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
@@ -74,22 +76,20 @@ public class Bot {
         shooterLeft.setFeedforwardCoefficients(ks, kv, ka);
         shooterLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooterRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
-//        Gamepad karel = new Gamepad();
-//        Gamepad karelNow = new Gamepad();
-//        limelight = hMap.get(Limelight3A.class, "limelight");
-//        limelight.pipelineSwitch(2);
+        limelight = hMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(1);
         follower = Constants.createFollower(hMap);
         follower.setStartingPose(startPose);
-//
+
         theTransfer = new TheTransfer(transfer);
         shooterDoors = new ShooterDoors(shootDoorLeft, shootDoorRight);
 //        doors = new TheDoors(sortLeft, sortRight, colorSensor);
         hood = new TheHood(hoodLeft, hoodRight);
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
-//        ll = new TheLimelight(limelight);
+        ll = new TheLimelight(limelight);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
-//        limelight.start();
+        limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
 //            ((SwitchableLight)colorSensor).enableLight(true);
 //        }
@@ -107,8 +107,6 @@ public class Bot {
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
-        TelemetryUtil.addData("hood left", hoodLeft.getPosition());
-        TelemetryUtil.addData("hood right", hoodRight.getPosition());
         TelemetryUtil.update();
         follower.update();
     }

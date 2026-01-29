@@ -23,9 +23,9 @@ public class AutoSort extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        if(bot.shooter.getOn()){
+        //if(bot.shooter.getOn()){
             return false;
-        }
-        return true;
+        //}
+        //return true;
     }
 }
