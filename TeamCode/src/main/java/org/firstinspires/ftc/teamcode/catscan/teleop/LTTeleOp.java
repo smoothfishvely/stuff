@@ -11,6 +11,8 @@ import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
@@ -21,6 +23,7 @@ public class LTTeleOp extends LinearOpMode {
     Pose startPose = new Pose(0, 0, 0);
     public static double vel = 0;
     boolean shootOn;
+    boolean sdl;
     @Override
     public void runOpMode() throws InterruptedException {
         TelemetryUtil.setup(telemetry);
@@ -44,7 +47,9 @@ public class LTTeleOp extends LinearOpMode {
         //gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new ShooterPower(bot, false));
 
         gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new ActivateIntake(bot));
-        gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(new ActivateTransfer(bot));
+        gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
+            new ActivateTransfer(bot).schedule();
+        });
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(()->{
             bot.hood.up();
             bot.hood.setPos();
@@ -53,6 +58,17 @@ public class LTTeleOp extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
+
+        gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new PositionSDRight(bot));
+        gp1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(()->{
+            sdl = !sdl;
+            if(!sdl){
+                new PositionSDLeft(bot, false).schedule();
+            } else {
+                new PositionSDLeft(bot, true).schedule();
+            }
+        });
+
         waitForStart();
         while(!isStopRequested() && opModeIsActive()){
 

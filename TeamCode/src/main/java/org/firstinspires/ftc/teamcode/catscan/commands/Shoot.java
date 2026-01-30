@@ -10,9 +10,9 @@ public class Shoot extends SequentialCommandGroup {
     public Shoot(Bot bot){
         addCommands(
                 new WaitCommand(500),
-                new ActivateTransfer(bot),//on
-                new WaitCommand(2250),
-                new ActivateTransfer(bot)//off
+                //new ActivateTransfer(bot),//on
+                new WaitCommand(2250)
+                //new ActivateTransfer(bot)//off
        );
         addRequirements(bot.shooter, bot.shooterDoors, bot.theTransfer);
     }

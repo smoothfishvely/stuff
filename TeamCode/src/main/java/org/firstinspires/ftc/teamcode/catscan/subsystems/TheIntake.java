@@ -10,6 +10,9 @@ public class TheIntake extends SubsystemBase {
         this.intake = intake;
     }
 
+    public boolean getOn(){
+        return on;
+    }
     public void setOn(){
         on = !on;
         if(on){

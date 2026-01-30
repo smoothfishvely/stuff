@@ -11,13 +11,15 @@ public class TheTransfer extends SubsystemBase {
     public TheTransfer(DcMotorEx transfer){
         this.transfer = transfer;
     }
-
+    public void setPower(double power){
+        transfer.setPower(power);
+    }
     public void setOn(){
         on = !on;
         if(on){
-            transfer.setPower(.7);
+            transfer.setPower(.75);
         } else {
-            transfer.setPower(0);
+            transfer.setPower(.2);
         }
     }
 }

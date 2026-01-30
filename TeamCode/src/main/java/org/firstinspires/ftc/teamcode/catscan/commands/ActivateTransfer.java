@@ -6,6 +6,7 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
 public class ActivateTransfer extends InstantCommand {
     private Bot bot;
+    private double power;
     public ActivateTransfer(Bot bot){
         this.bot = bot;
     }
