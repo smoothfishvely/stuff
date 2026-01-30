@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.catscan.teleop;
+package org.firstinspires.ftc.teamcode.catscan.testers;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;

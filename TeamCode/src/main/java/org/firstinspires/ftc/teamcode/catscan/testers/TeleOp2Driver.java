@@ -1,9 +1,8 @@
-package org.firstinspires.ftc.teamcode.catscan.teleop;
+package org.firstinspires.ftc.teamcode.catscan.testers;
 
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -12,17 +11,17 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
-//@TeleOp(name="lone wolf")
-public class LoneWolfTeleOp extends LinearOpMode {
+//@TeleOp(name = "interlocking toes")
+public class TeleOp2Driver extends LinearOpMode {
     DcMotor frontRight, frontLeft, backRight, backLeft, intake;
     Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight;
     MotorEx shooterLeft, shooterRight;
     Limelight3A ll;
     private ElapsedTime adjTimer;
-    private boolean aToggle, prevA, rkUp =  true, lkUp = true, lDoor, rDoor;
+    private boolean aToggle, prevA, rkUp, lkUp, lDoor, rDoor;
     private double shooterPower, shooterAdj, adjWaitTime, hoodPos, targetHeight = .4572;
     private double rkd = .51, rku = .8; //increase to make kicker go down
-    private double lkd = .42, lku = .74;
+    private double lkd = .42, lku = .72;
     public void runOpMode() throws InterruptedException {
 
         frontLeft = hardwareMap.dcMotor.get("frontLeft");
@@ -68,9 +67,9 @@ public class LoneWolfTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             karel.copy(karelNow);
             karelNow.copy(gamepad1);
-            double y = gamepad1.left_stick_y;
-            double x = gamepad1.left_stick_x * 1.1;
-            double rx = gamepad1.right_stick_x * .85;
+            double y = gamepad2.left_stick_y;
+            double x = gamepad2.left_stick_x * 1.1;
+            double rx = gamepad2.right_stick_x * .85;
             double d = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
             double fl = Math.pow((y - x - rx),5) / d;
             double bl = Math.pow((y + x - rx),5) / d;
@@ -167,6 +166,27 @@ public class LoneWolfTeleOp extends LinearOpMode {
                 shooterPower = 1.45;
             }
 
+            //door test
+            /*
+            if(karelNow.left_trigger > 0 && !(karel.left_trigger > 0)){
+                lDoor = !lDoor;
+                if(lDoor){
+                    sortLeft.setPosition(.80);
+                } else {
+                    sortLeft.setPosition(.45);//up
+                }
+            }
+
+            if(karelNow.right_trigger > 0 && !(karel.right_trigger > 0)){
+                rDoor = !rDoor;
+                if(rDoor){
+                    sortRight.setPosition(.80);
+                } else {
+                    sortRight.setPosition(.45);//up
+                }
+            }*/
+
+            //fix kicker
             if(karelNow.left_trigger > 0 && !(karel.left_trigger > 0)){
                 rkd -= .03;
                 rku -=.03;
@@ -187,7 +207,7 @@ public class LoneWolfTeleOp extends LinearOpMode {
             telemetry.addData("Velocity: ", shooterLeft.getVelocity());
             telemetry.addData("Motor Power: ", shooterPower);
             telemetry.addData("Hood Position: ", hoodPos);
-            telemetry.addData("Left Kicker Up: ", !lkUp);
+            telemetry.addData("Left Kicker Up: ", lkUp);
             telemetry.addData("Right Kicker Up: ", rkUp);
             telemetry.addData("lkicker dpos: ", lkd);
             telemetry.addData("rkicker dpos: ", rkd);
