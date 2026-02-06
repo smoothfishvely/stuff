@@ -9,6 +9,12 @@ import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+
 import java.util.List;
 @Configurable
 public class TheLimelight extends SubsystemBase {
@@ -16,11 +22,23 @@ public class TheLimelight extends SubsystemBase {
     private int motifId;
     private double ty, tx;
     private double targetHeight = .3429;
+    double power;
+    Pose3D pose = new Pose3D(new Position(DistanceUnit.INCH, 0,0,0,0),
+            new YawPitchRollAngles(AngleUnit.DEGREES, 0,0,0,0));
 
     private static double aimTolerance = 0.5;
+    private static double kp;
+    private static double ki;
+    private static double kd;
+    private static double kf;
+    PIDFController pidf = new PIDFController(kp,ki,kd,kf);
+
+    //these 3 are lwk useless shizz
+    double lastVel = 1300;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
-    double lastVel = 1300;
+
+
     LLResult result;
 
     private static double degreeOffset = 0; //adjust
@@ -73,6 +91,14 @@ public class TheLimelight extends SubsystemBase {
         return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
     }
 
+    public double getAimPower() {
+        power = Range.clip(power, -1, 1); // maxes power at -1 and 1
+        return power;
+    }
+    public Pose3D getBotPose() {
+        return pose;
+    }
+
     @Override
     public void periodic(){
         result = limelight.getLatestResult();
@@ -80,8 +106,12 @@ public class TheLimelight extends SubsystemBase {
         for (LLResultTypes.FiducialResult fr : fiducialResults) {
             motifId = fr.getFiducialId();
         }
-        ty = result.getTy();
         tx = result.getTx();
+        ty = result.getTy();
+        pose = result.getBotpose();
+
+        pidf.setTolerance(aimTolerance);
+        power = pidf.calculate(tx - degreeOffset, 0);
         if(!result.isValid()){
             TelemetryUtil.addData("ll result invalid");
         }

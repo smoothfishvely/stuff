@@ -30,6 +30,7 @@ public class LTTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         TelemetryUtil.setup(telemetry);
         bot = new Bot(hardwareMap, startPose, true);
+        bot.isBlue = true; //sets to blue for goal position calculations bc thats also the pipeline we're using
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);
         bot.frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -76,7 +77,7 @@ public class LTTeleOp extends LinearOpMode {
         });
 
         gp2.getGamepadButton(GamepadKeys.Button.A).whileHeld(()->{
-            bot.follower.turnTo(Math.toRadians(rx));
+            bot.follower.turnTo(Math.toRadians(bot.getTargetAngle())); //changed to target angle, as it was set to rx before
         });
 
         gp2.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
@@ -87,8 +88,8 @@ public class LTTeleOp extends LinearOpMode {
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
 
-            /*if (gamepad2.a) {
-                rx = bot.getAimPower();
+            if (gamepad2.x) {
+                rx = bot.ll.getAimPower(); // tests it with ll , could be switched to the pedro coordinate based pid in bot class
             }
             else {
                 rx = -gamepad2.right_stick_x * .967;
@@ -97,8 +98,8 @@ public class LTTeleOp extends LinearOpMode {
             bot.frontLeft.setPower(Math.pow(((-gamepad2.left_stick_y) - (-gamepad2.left_stick_x * 1.1) - rx),5) / d);
             bot.backLeft.setPower(Math.pow(((-gamepad2.left_stick_y) + (-gamepad2.left_stick_x * 1.1) - rx),5) / d);
             bot.frontRight.setPower(Math.pow(((-gamepad2.left_stick_y) + (-gamepad2.left_stick_x * 1.1) + rx),5) / d);
-            bot.backRight.setPower(Math.pow(((-gamepad2.left_stick_y) - (-gamepad2.left_stick_x * 1.1) + rx),5) / d);*/
-            bot.follower.setTeleOpDrive(Math.pow(-gamepad2.left_stick_y, 3), Math.pow(-gamepad2.left_stick_x * 1.1,3), Math.pow(-gamepad2.right_stick_x * .967,3), true);
+            bot.backRight.setPower(Math.pow(((-gamepad2.left_stick_y) - (-gamepad2.left_stick_x * 1.1) + rx),5) / d);
+            //bot.follower.setTeleOpDrive(Math.pow(-gamepad2.left_stick_y, 3), Math.pow(-gamepad2.left_stick_x * 1.1,3), Math.pow(-gamepad2.right_stick_x * .967,3), true);
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());

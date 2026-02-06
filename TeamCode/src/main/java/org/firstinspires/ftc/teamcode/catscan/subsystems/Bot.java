@@ -2,22 +2,27 @@ package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.FTCCoordinates;
+import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Configurable
@@ -40,15 +45,17 @@ public class Bot {
     public TheDoors doors;
     public NormalizedColorSensor colorSensor;
     private double power;
-    PIDFController epstein;
+    PIDFController aimPIDF;
+    Pose goon = follower.getPose();
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
     public boolean teleOp;
+    public boolean isBlue; //added this to use to determine target goal position, see getTargetAngle()
     private int motif;
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
 //        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
-        epstein = new PIDFController(aimKp,aimKI,aimKd,aimKf);
+        aimPIDF = new PIDFController(aimKp,aimKI,aimKd,aimKf);
 
         shootDoorRight = hMap.get(Servo.class, "shootDoorRight");
         //clutchLeft = hardwareMap.get(Servo.class, "clutchLeft");
@@ -102,22 +109,48 @@ public class Bot {
     public double getRizz(){
         return (133 * ll.getGoalDistanceM()) + 1025;
     }
+    public double getHoodAngle() { return (.0806596 * ll.getGoalDistanceM()) + 0.26413;} /*added the hood angle equation into here,
+    idk how to implement in teleOp tho lmfao */
 
-    public double getSkibidiRizz(){
-        Pose goon = follower.getPose();
-        return Math.atan(goon.getX()/goon.getY()) - goon.getHeading();
+    public double getTargetAngle(){//made this get target angle so it can be used for the .turnTo version in teleOp
+        if (isBlue) {
+            double x = goon.getX();
+            double y = 144 - goon.getY(); //blue goal position is at x = 0, y = 144 in pedro coordinates
+            return Math.atan(x / y);
+        }
+        else {
+            double x = 144 - goon.getX(); //red goal position is at x = 144, y = 144 in pedro coordinates
+            double y = 144 - goon.getY();
+            return Math.atan(x / y);
+        }
+    }
+
+    public void setPose(Pose pose){ //maybe use for manual relocalize but idk how necessary (just wanted to lol)
+        follower.setPose(pose);
+    }
+
+    public void llRelocalize(){ //gets botPose from ll, converts to pedro coordinate system, and sets pose to the result
+        Pose3D pose = ll.getBotPose();
+        Position pos = pose.getPosition();
+        YawPitchRollAngles angles = pose.getOrientation();
+        Pose adjustedPose = new Pose(pos.x, pos.y, angles.getYaw(), FTCCoordinates.INSTANCE)
+                .getAsCoordinateSystem(PedroCoordinates.INSTANCE); //converts to pedro coordinate system
+        follower.setPose(adjustedPose);
     }
     public double getAimPower() {
+        power = Range.clip(power, -1, 1); //maxes power at -1 and 1 so it doesnt go over
         return power;
     }
 
     public void loop(){
-        epstein.setPIDF(aimKp, aimKI, aimKd, aimKf);
-        power = epstein.calculate(getSkibidiRizz(), 0);
+        aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
+        aimPIDF.setTolerance(.5);
+        power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
-        TelemetryUtil.addData("offset", getSkibidiRizz());
+        TelemetryUtil.addData("target angle", getTargetAngle());
+        TelemetryUtil.addData("offset", getTargetAngle() - goon.getHeading());
         TelemetryUtil.update();
         follower.update();
     }
