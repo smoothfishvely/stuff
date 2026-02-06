@@ -21,9 +21,8 @@ public class ShooterDoors extends SubsystemBase {
         }
         TelemetryUtil.addData("Hsoidfhiosdhfosdif ", open);
     }
-    public void shootRight(){
-        shootR = !shootR;
-        if (shootR) {
+    public void shootRight(boolean shootR){
+        if (!shootR) {
             shootDoorRight.setPosition(.3);
         } else {
             shootDoorRight.setPosition(.05);

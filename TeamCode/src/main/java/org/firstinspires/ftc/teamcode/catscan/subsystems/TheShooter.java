@@ -1,22 +1,26 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 @Configurable
 public class TheShooter extends SubsystemBase {
     MotorEx shooterLeft, shooterRight;
-    public static double kp = 1.3;
+    TelemetryManager tm;
+    public static double kp = 0.0029;
     public static double ki = 0;
-    public static double kd = 1.25;
-    public static double ks = 232;
-    public static double kv = 1.2;
-    public static double ka = 0;
-    double velocity;
+    public static double kd = 0.00003;
+    public static double kf = 0.0005;
+    PIDFController epstein;
+    public static double velocity = 0;
     public TheShooter(MotorEx shooterLeft, MotorEx shooterRight){
+        tm = PanelsTelemetry.INSTANCE.getTelemetry();
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
-        velocity = 0;
+        epstein = new PIDFController(kp,ki,kd,kf);
     }
 
     public double getVelocity(){
@@ -28,20 +32,26 @@ public class TheShooter extends SubsystemBase {
     }
 
     public void add(){
-        velocity += 30;
+        velocity += 20;
     }
 
     public void subtract(){
-        velocity -= 30;
+        velocity -= 20;
     }
 
     @Override
     public void periodic(){
-        shooterLeft.setVelocity(velocity);
-        shooterRight.setVelocity(velocity);
-        shooterRight.setVeloCoefficients(kp, ki, kd);
-        shooterLeft.setVeloCoefficients(kp, ki, kd);
-        shooterRight.setFeedforwardCoefficients(ks, kv, ka);
-        shooterLeft.setFeedforwardCoefficients(ks, kv, ka);
+        if(velocity != 0) {
+            epstein.setPIDF(kp, ki, kd, kf);
+            double power = epstein.calculate(shooterLeft.getVelocity(), velocity);
+            shooterLeft.set(power);
+            shooterRight.set(power);
+        } else {
+            shooterLeft.set(0);
+            shooterRight.set(0);
+        }
+        tm.debug("velocity", shooterLeft.getVelocity());
+        tm.debug("target v", velocity);
+        tm.update();
     }
 }

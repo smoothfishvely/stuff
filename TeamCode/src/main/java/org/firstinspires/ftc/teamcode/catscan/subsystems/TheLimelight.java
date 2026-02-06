@@ -1,30 +1,29 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import java.util.List;
-
+@Configurable
 public class TheLimelight extends SubsystemBase {
     Limelight3A limelight;
     private int motifId;
     private double ty, tx;
     private double targetHeight = .3429;
+
     private static double aimTolerance = 0.5;
-    private static double aimKp = 0; //tune pids
-    private static double aimKI = 0;
-    private static double aimKd = 0;
-    private static double aimKs = 0;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
     double lastVel = 1300;
     LLResult result;
 
-    private double degreeOffset = 0; //adjust
+    private static double degreeOffset = 0; //adjust
     private final ElapsedTime aimTimer = new ElapsedTime();
     public TheLimelight(Limelight3A limelight){
         this.limelight = limelight;
@@ -38,7 +37,7 @@ public class TheLimelight extends SubsystemBase {
     public double getTy() {return ty;}
 
     public double getTx() {return tx;}
-
+/*
     public double AimPID() {
         if (result.isValid()) {
             double timeDiff = aimTimer.seconds();
@@ -58,17 +57,20 @@ public class TheLimelight extends SubsystemBase {
             }
 
             double output = aimKp * error + (aimKI * aimIntegral)
-                    + (aimKd * aimDerivative) + (aimKs * Math.signum(error));
+                    + (aimKd * aimDerivative) + (aimKf * Math.signum(error));
             output = Range.clip(output, -1, 1);// limits within -1, 1
             return output;
         }
         else {
             return 0;
         }
-    }
+    }*/
 
     public void setPipeline(int p){
         limelight.pipelineSwitch(p);
+    }
+    public double getGoalDistanceM() {
+        return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
     }
 
     @Override
@@ -77,8 +79,6 @@ public class TheLimelight extends SubsystemBase {
         List<LLResultTypes.FiducialResult> fiducialResults = result.getFiducialResults();
         for (LLResultTypes.FiducialResult fr : fiducialResults) {
             motifId = fr.getFiducialId();
-            //ty = fr.getTargetYDegrees();
-            //tx = fr.getTargetXDegrees();
         }
         ty = result.getTy();
         tx = result.getTx();
@@ -86,13 +86,4 @@ public class TheLimelight extends SubsystemBase {
             TelemetryUtil.addData("ll result invalid");
         }
     }
-    public double getGoalDistanceCM() {
-        return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
-    }
-    //need to calculate coefficients for power and stuff
-    /*public double distanceBasedVelocity() {
-        if  (result.isValid()) {
-
-        }
-    }*/
 }

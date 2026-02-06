@@ -6,11 +6,13 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
 public class PositionSDRight extends InstantCommand {
     private Bot bot;
-    public PositionSDRight(Bot bot){
+    private boolean open;
+    public PositionSDRight(Bot bot, boolean open){
         this.bot = bot;
+        this.open = open;
     }
 
     public void initialize(){
-        bot.shooterDoors.shootRight();
+        bot.shooterDoors.shootRight(open);
     }
 }
