@@ -87,18 +87,25 @@ public class LTTeleOp extends LinearOpMode {
         waitForStart();
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
-
+            double y = (-gamepad2.left_stick_y);
+            double x = (-gamepad2.left_stick_x * 1.1);
             if (gamepad2.x) {
-                rx = bot.ll.getAimPower(); // tests it with ll , could be switched to the pedro coordinate based pid in bot class
+                rx = -bot.ll.AimPID(); // tests it with ll , could be switched to the pedro coordinate based pid in bot class
+                x = (-gamepad2.left_stick_x * .75);
+                y = (-gamepad2.left_stick_y * .65);
+            }
+            else if (gamepad2.b){
+                rx = bot.getAimPower();
             }
             else {
                 rx = -gamepad2.right_stick_x * .967;
             }
+
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
-            bot.frontLeft.setPower(Math.pow(((-gamepad2.left_stick_y) - (-gamepad2.left_stick_x * 1.1) - rx),5) / d);
-            bot.backLeft.setPower(Math.pow(((-gamepad2.left_stick_y) + (-gamepad2.left_stick_x * 1.1) - rx),5) / d);
-            bot.frontRight.setPower(Math.pow(((-gamepad2.left_stick_y) + (-gamepad2.left_stick_x * 1.1) + rx),5) / d);
-            bot.backRight.setPower(Math.pow(((-gamepad2.left_stick_y) - (-gamepad2.left_stick_x * 1.1) + rx),5) / d);
+            bot.frontLeft.setPower(Math.pow((y - x - rx),5) / d);
+            bot.backLeft.setPower(Math.pow((y + x - rx),5) / d);
+            bot.frontRight.setPower(Math.pow((y + x + rx),5) / d);
+            bot.backRight.setPower(Math.pow((y - x + rx),5) / d);
             //bot.follower.setTeleOpDrive(Math.pow(-gamepad2.left_stick_y, 3), Math.pow(-gamepad2.left_stick_x * 1.1,3), Math.pow(-gamepad2.right_stick_x * .967,3), true);
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
@@ -106,7 +113,8 @@ public class LTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
-            TelemetryUtil.addData("aim power: ", bot.getAimPower());
+            TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
+            TelemetryUtil.addData("bot aim power: ", bot.getAimPower());
             bot.loop();
         }
         bot.limelight.stop();

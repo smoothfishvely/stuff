@@ -46,7 +46,7 @@ public class Bot {
     public NormalizedColorSensor colorSensor;
     private double power;
     PIDFController aimPIDF;
-    Pose goon = follower.getPose();
+    Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
     public boolean teleOp;
@@ -84,7 +84,7 @@ public class Bot {
         limelight.pipelineSwitch(1);
         follower = Constants.createFollower(hMap);
         follower.setStartingPose(startPose);
-
+        goon = follower.getPose();
         theTransfer = new TheTransfer(transfer);
         shooterDoors = new ShooterDoors(shootDoorLeft, shootDoorRight);
 //        doors = new TheDoors(sortLeft, sortRight, colorSensor);
@@ -143,6 +143,7 @@ public class Bot {
     }
 
     public void loop(){
+        goon = follower.getPose();
         aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
         aimPIDF.setTolerance(.5);
         power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());

@@ -55,9 +55,8 @@ public class TheLimelight extends SubsystemBase {
     public double getTy() {return ty;}
 
     public double getTx() {return tx;}
-/*
+
     public double AimPID() {
-        if (result.isValid()) {
             double timeDiff = aimTimer.seconds();
             aimTimer.reset();
 
@@ -74,15 +73,11 @@ public class TheLimelight extends SubsystemBase {
                 return 0;
             }
 
-            double output = aimKp * error + (aimKI * aimIntegral)
-                    + (aimKd * aimDerivative) + (aimKf * Math.signum(error));
+            double output = kp * error + (ki * aimIntegral)
+                    + (kd * aimDerivative) + (kf * Math.signum(error));
             output = Range.clip(output, -1, 1);// limits within -1, 1
             return output;
-        }
-        else {
-            return 0;
-        }
-    }*/
+    }
 
     public void setPipeline(int p){
         limelight.pipelineSwitch(p);
@@ -109,7 +104,7 @@ public class TheLimelight extends SubsystemBase {
         tx = result.getTx();
         ty = result.getTy();
         pose = result.getBotpose();
-
+        pidf.setPIDF(kp, ki, kd, kf);
         pidf.setTolerance(aimTolerance);
         power = pidf.calculate(tx - degreeOffset, 0);
         if(!result.isValid()){
