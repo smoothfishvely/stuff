@@ -50,8 +50,8 @@ public class TheShooter extends SubsystemBase {
             shooterLeft.set(0);
             shooterRight.set(0);
         }
-        tm.debug("velocity", shooterLeft.getVelocity());
-        tm.debug("target v", velocity);
+        tm.debug("velocity: ", shooterLeft.getVelocity());
+        tm.debug("target velocity: ", velocity);
         tm.update();
     }
 }

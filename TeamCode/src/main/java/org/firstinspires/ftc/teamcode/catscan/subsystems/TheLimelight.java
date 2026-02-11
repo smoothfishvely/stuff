@@ -26,14 +26,13 @@ public class TheLimelight extends SubsystemBase {
     Pose3D pose = new Pose3D(new Position(DistanceUnit.INCH, 0,0,0,0),
             new YawPitchRollAngles(AngleUnit.DEGREES, 0,0,0,0));
 
-    private static double aimTolerance = 0.5;
-    private static double kp;
-    private static double ki;
-    private static double kd;
-    private static double kf;
+    private static double aimTolerance = 0.67;
+    private static double kp = .025;
+    private static double ki = 0;
+    private static double kd = .0043;
+    private static double kf = .055;
     PIDFController pidf = new PIDFController(kp,ki,kd,kf);
 
-    //these 3 are lwk useless shizz
     double lastVel = 1300;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
@@ -41,8 +40,9 @@ public class TheLimelight extends SubsystemBase {
 
     LLResult result;
 
-    private static double degreeOffset = 0; //adjust
+    private static double degreeOffset = -5; //adjust
     private final ElapsedTime aimTimer = new ElapsedTime();
+    double timeDiff;
     public TheLimelight(Limelight3A limelight){
         this.limelight = limelight;
         result = limelight.getLatestResult();
@@ -57,8 +57,6 @@ public class TheLimelight extends SubsystemBase {
     public double getTx() {return tx;}
 
     public double AimPID() {
-            double timeDiff = aimTimer.seconds();
-            aimTimer.reset();
 
             double error = tx - degreeOffset;
 
@@ -82,6 +80,9 @@ public class TheLimelight extends SubsystemBase {
     public void setPipeline(int p){
         limelight.pipelineSwitch(p);
     }
+    public void setDegreeOffset(double degree) {
+        degreeOffset = degree;
+    }
     public double getGoalDistanceM() {
         return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
     }
@@ -103,10 +104,16 @@ public class TheLimelight extends SubsystemBase {
         }
         tx = result.getTx();
         ty = result.getTy();
+        timeDiff = aimTimer.seconds();
+        //TelemetryUtil.addData("timer", timeDiff);
+
+        aimTimer.reset();
         pose = result.getBotpose();
+        /*
         pidf.setPIDF(kp, ki, kd, kf);
         pidf.setTolerance(aimTolerance);
         power = pidf.calculate(tx - degreeOffset, 0);
+        */
         if(!result.isValid()){
             TelemetryUtil.addData("ll result invalid");
         }

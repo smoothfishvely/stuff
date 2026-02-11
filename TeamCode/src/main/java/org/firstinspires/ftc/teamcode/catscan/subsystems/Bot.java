@@ -82,6 +82,7 @@ public class Bot {
         shooterRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         limelight = hMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(1);
+        limelight.setPollRateHz(90);
         follower = Constants.createFollower(hMap);
         follower.setStartingPose(startPose);
         goon = follower.getPose();
@@ -107,11 +108,21 @@ public class Bot {
         return motif;
     }
     public double getRizz(){
-        return (133 * ll.getGoalDistanceM()) + 1025;
+        if (ll.getGoalDistanceM() > 3) {
+            return 1600;
+        }
+        else{
+            return (133 * ll.getGoalDistanceM()) + 1025;
+        }
     }
-    public double getHoodAngle() { return (.0806596 * ll.getGoalDistanceM()) + 0.26413;} /*added the hood angle equation into here,
-    idk how to implement in teleOp tho lmfao */
-
+    public double getHoodAngle() {
+        if (ll.getGoalDistanceM() > 3) {
+            return .43;
+        }
+        else {
+            return (.0806596 * ll.getGoalDistanceM()) + 0.26413;
+        }
+    }
     public double getTargetAngle(){//made this get target angle so it can be used for the .turnTo version in teleOp
         if (isBlue) {
             double x = goon.getX();
@@ -144,14 +155,14 @@ public class Bot {
 
     public void loop(){
         goon = follower.getPose();
-        aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
+        /*aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
         aimPIDF.setTolerance(.5);
-        power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());
+        power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());*/
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
-        TelemetryUtil.addData("target angle", getTargetAngle());
-        TelemetryUtil.addData("offset", getTargetAngle() - goon.getHeading());
+        //TelemetryUtil.addData("target angle", Math.toDegrees(getTargetAngle()));
+        //TelemetryUtil.addData("error", error);
         TelemetryUtil.update();
         follower.update();
     }

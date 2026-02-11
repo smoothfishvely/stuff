@@ -4,14 +4,18 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
+import com.seattlesolvers.solverslib.hardware.motors.Motor;
+
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
@@ -21,7 +25,7 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Configurable
 @TeleOp(name = "4102 lt drive")
 public class LTTeleOp extends LinearOpMode {
-    Pose startPose = new Pose(0, 0, 0);
+    Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
     boolean ont, diddy;
@@ -38,7 +42,7 @@ public class LTTeleOp extends LinearOpMode {
         bot.frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         bot.backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         //buttons and stuff
-        gp1.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
+        gp1.getGamepadButton(GamepadKeys.Button.START).whenPressed(()->{
             shootOn = !shootOn;
             if(!shootOn) {
                 new ActivateShooter(bot, 0).schedule();
@@ -48,6 +52,10 @@ public class LTTeleOp extends LinearOpMode {
         });
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new ShooterPower(bot, true));
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new ShooterPower(bot, false));
+        gp1.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
+            new ActivateShooter(bot, bot.getRizz()).schedule();
+            //new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
+        });
         gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new ActivateIntake(bot));
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
             ont = !ont;
@@ -75,38 +83,43 @@ public class LTTeleOp extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
-
+        /*
         gp2.getGamepadButton(GamepadKeys.Button.A).whileHeld(()->{
-            bot.follower.turnTo(Math.toRadians(bot.getTargetAngle())); //changed to target angle, as it was set to rx before
+            bot.follower.turnTo(bot.getTargetAngle()); //changed to target angle, as it was set to rx before
         });
-
         gp2.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
-
-        });
+        });*/
 
         waitForStart();
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
+            double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
             double y = (-gamepad2.left_stick_y);
             double x = (-gamepad2.left_stick_x * 1.1);
             if (gamepad2.x) {
                 rx = -bot.ll.AimPID(); // tests it with ll , could be switched to the pedro coordinate based pid in bot class
-                x = (-gamepad2.left_stick_x * .75);
-                y = (-gamepad2.left_stick_y * .65);
-            }
-            else if (gamepad2.b){
-                rx = bot.getAimPower();
+                x = (-gamepad2.left_stick_x * .8);
+                y = (-gamepad2.left_stick_y * .7);
+                bot.frontLeft.setPower(y - x - rx);
+                bot.backLeft.setPower(y + x - rx);
+                bot.frontRight.setPower(y + x + rx);
+                bot.backRight.setPower(y - x + rx);
+                bot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
             else {
                 rx = -gamepad2.right_stick_x * .967;
+                bot.frontLeft.setPower(Math.pow((y - x - rx),5) / d);
+                bot.backLeft.setPower(Math.pow((y + x - rx),5) / d);
+                bot.frontRight.setPower(Math.pow((y + x + rx),5) / d);
+                bot.backRight.setPower(Math.pow((y - x + rx),5) / d);
+                bot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+                bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
-
-            double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
-            bot.frontLeft.setPower(Math.pow((y - x - rx),5) / d);
-            bot.backLeft.setPower(Math.pow((y + x - rx),5) / d);
-            bot.frontRight.setPower(Math.pow((y + x + rx),5) / d);
-            bot.backRight.setPower(Math.pow((y - x + rx),5) / d);
-            //bot.follower.setTeleOpDrive(Math.pow(-gamepad2.left_stick_y, 3), Math.pow(-gamepad2.left_stick_x * 1.1,3), Math.pow(-gamepad2.right_stick_x * .967,3), true);
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
@@ -114,7 +127,7 @@ public class LTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
-            TelemetryUtil.addData("bot aim power: ", bot.getAimPower());
+            //TelemetryUtil.addData("bot aim power: ", bot.getAimPower());
             bot.loop();
         }
         bot.limelight.stop();
