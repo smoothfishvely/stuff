@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
@@ -31,6 +32,7 @@ public class Bot {
     public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight ;
     public MotorEx shooterLeft, shooterRight;
     public TheHood hood;
+    public DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
     private static double aimKp = .1; //tune pids
     private static double aimKI = 0;
     private static double aimKd = 0;
@@ -43,6 +45,7 @@ public class Bot {
     public Limelight3A limelight;
     public Follower follower;
     public TheDoors doors;
+    public BeamBreaks beamBreaks;
     public NormalizedColorSensor colorSensor;
     private double power;
     PIDFController aimPIDF;
@@ -56,7 +59,6 @@ public class Bot {
 //        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
         aimPIDF = new PIDFController(aimKp,aimKI,aimKd,aimKf);
-
         shootDoorRight = hMap.get(Servo.class, "shootDoorRight");
         //clutchLeft = hardwareMap.get(Servo.class, "clutchLeft");
         //clutchRight = hardwareMap.get(Servo.class, "clutchRight");
@@ -75,6 +77,16 @@ public class Bot {
         hoodRight = hMap.get(Servo.class, "hoodRight");
         //sortLeft = hardwareMap.get(Servo.class, "sortLeft");
         //sortRight = hardwareMap.get(Servo.class, "sortRight");
+
+        rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
+        rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
+        leftTopBB = hMap.get(DigitalChannel.class, "leftTopBB");
+        bottomBB = hMap.get(DigitalChannel.class, "bottomBB");
+        rightTopBB.setMode(DigitalChannel.Mode.INPUT);
+        rightMidBB.setMode(DigitalChannel.Mode.INPUT);
+        leftTopBB.setMode(DigitalChannel.Mode.INPUT);
+        bottomBB.setMode(DigitalChannel.Mode.INPUT);
+
         shooterLeft.setInverted(true);
         intake = hMap.get(DcMotorEx.class,"intake");
         intake.setDirection(DcMotor.Direction.REVERSE);
@@ -93,6 +105,7 @@ public class Bot {
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
         ll = new TheLimelight(limelight);
+        beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
         limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
