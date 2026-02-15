@@ -36,11 +36,12 @@ public class TheLimelight extends SubsystemBase {
     double lastVel = 1300;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
+    public static int colorOffsetSig; // 1 for red, -1 for blue
 
 
     LLResult result;
 
-    private static double degreeOffset = -5; //adjust
+    private static double degreeOffset = 5 * colorOffsetSig;
     private final ElapsedTime aimTimer = new ElapsedTime();
     double timeDiff;
     public TheLimelight(Limelight3A limelight){
@@ -57,6 +58,10 @@ public class TheLimelight extends SubsystemBase {
     public double getTx() {return tx;}
 
     public double AimPID() {
+
+            if (getGoalDistanceM() >3 && getGoalDistanceM() < 5) {
+                degreeOffset = -1 * colorOffsetSig;
+            }
 
             double error = tx - degreeOffset;
 

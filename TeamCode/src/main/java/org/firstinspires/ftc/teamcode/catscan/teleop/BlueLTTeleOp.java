@@ -10,7 +10,6 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-import com.seattlesolvers.solverslib.hardware.motors.Motor;
 
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
@@ -23,8 +22,8 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Configurable
-@TeleOp(name = "4102 lt drive")
-public class LTTeleOp extends LinearOpMode {
+@TeleOp(name = "4102 lt drive blue")
+public class BlueLTTeleOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
@@ -34,7 +33,7 @@ public class LTTeleOp extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         TelemetryUtil.setup(telemetry);
         bot = new Bot(hardwareMap, startPose, true);
-        bot.isBlue = true; //sets to blue for goal position calculations bc thats also the pipeline we're using
+        bot.ll.colorOffsetSig = -1; // blue
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);
         bot.frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
