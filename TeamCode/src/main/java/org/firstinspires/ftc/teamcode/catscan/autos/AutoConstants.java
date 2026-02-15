@@ -8,7 +8,11 @@ public class AutoConstants {
     public static double startX = 25.564;
     public static double startY = 127.583;
     public static double startHeading = 135;
-    public static double shootX = 59.3;
-    public static double shootY = 95.68;
-    public static double shootHeading = 141;
+    public static double shootX = 54;
+    public static double shootY = 88;
+    public static double shootHeading = 134;
+    public static double gateIntakeX = 11;
+    public static double gateIntakeY = 60;
+    public static double gateIntakeHeading = 145;
+
 }

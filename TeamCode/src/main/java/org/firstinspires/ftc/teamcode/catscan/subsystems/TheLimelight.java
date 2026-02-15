@@ -29,8 +29,8 @@ public class TheLimelight extends SubsystemBase {
     private static double aimTolerance = 0.67;
     private static double kp = .025;
     private static double ki = 0;
-    private static double kd = .0043;
-    private static double kf = .055;
+    private static double kd = .0038;
+    private static double kf = .02;
     PIDFController pidf = new PIDFController(kp,ki,kd,kf);
 
     double lastVel = 1300;

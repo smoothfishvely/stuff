@@ -28,7 +28,7 @@ public class LTTeleOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
-    boolean ont, diddy;
+    boolean ont;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -54,7 +54,7 @@ public class LTTeleOp extends LinearOpMode {
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new ShooterPower(bot, false));
         gp1.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
             new ActivateShooter(bot, bot.getRizz()).schedule();
-            //new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
+            new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
         });
         gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new ActivateIntake(bot));
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
@@ -88,6 +88,10 @@ public class LTTeleOp extends LinearOpMode {
             bot.follower.turnTo(bot.getTargetAngle()); //changed to target angle, as it was set to rx before
         });
         gp2.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
+        });
+        gp2.getGamepadButton(GamepadKeys.Button.X).whileHeld(()->{
+            new ActivateShooter(bot, bot.getRizz()).schedule();
+            new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
         });*/
 
         waitForStart();

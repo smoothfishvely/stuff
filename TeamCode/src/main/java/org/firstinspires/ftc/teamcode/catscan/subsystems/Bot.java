@@ -108,10 +108,13 @@ public class Bot {
         return motif;
     }
     public double getRizz(){
-        if (ll.getGoalDistanceM() > 3) {
+        if (ll.getGoalDistanceM() > 5) {
+            return 1250;
+        }
+        else if (ll.getGoalDistanceM() > 3){
             return 1600;
         }
-        else{
+        else {
             return (133 * ll.getGoalDistanceM()) + 1025;
         }
     }

@@ -15,12 +15,13 @@ public class TheShooter extends SubsystemBase {
     public static double kd = 0.00003;
     public static double kf = 0.0005;
     PIDFController epstein;
-    public static double velocity = 0;
+    public static double velocity;
     public TheShooter(MotorEx shooterLeft, MotorEx shooterRight){
         tm = PanelsTelemetry.INSTANCE.getTelemetry();
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
         epstein = new PIDFController(kp,ki,kd,kf);
+        velocity = 0;
     }
 
     public double getVelocity(){

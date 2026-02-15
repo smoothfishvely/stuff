@@ -6,19 +6,19 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
 public class ActivateShooter extends InstantCommand {
     private Bot bot;
-    private double power;
+    private double velocity;
     private boolean on;
-    public ActivateShooter(Bot bot, double power){
+    public ActivateShooter(Bot bot, double velocity){
         this.bot = bot;
-        this.power = power;
+        this.velocity = velocity;
     }
 
     public ActivateShooter(Bot bot){
         this.bot = bot;
-        power = 0;
+        velocity = 0;
     }
 
     public void initialize(){
-        bot.shooter.setVelocity(power);
+        bot.shooter.setVelocity(velocity);
     }
 }
