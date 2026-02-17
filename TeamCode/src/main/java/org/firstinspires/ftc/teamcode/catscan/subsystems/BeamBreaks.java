@@ -7,6 +7,7 @@ public class BeamBreaks extends SubsystemBase {
     private DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
     private int numBalls;
     private boolean rightTop, rightMid, leftTop, bottom;
+    public boolean realRightTop, realRightMid, realLeftTop, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
                        DigitalChannel leftTopBB, DigitalChannel bottomBB) {
         this.rightTopBB = rightTopBB;
@@ -26,6 +27,15 @@ public class BeamBreaks extends SubsystemBase {
         return numBalls;
     }
 
+    public boolean isAllFalse() {
+        if (!rightTop && !rightMid && !bottom) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     @Override
     public void periodic() {
 
@@ -33,6 +43,16 @@ public class BeamBreaks extends SubsystemBase {
         rightMid = rightMidBB.getState();
         leftTop = leftTopBB.getState();
         bottom = bottomBB.getState();
+
+        if (rightTop) {
+            realRightTop = true;
+        }
+        if (rightMid && realRightTop) {
+            realRightMid = true;
+        }
+        if (bottom && realRightMid) {
+            realBottom = true;
+        }
 
         TelemetryUtil.addData("right top:" + rightTop);
         TelemetryUtil.addData("right mid:" + rightMid);

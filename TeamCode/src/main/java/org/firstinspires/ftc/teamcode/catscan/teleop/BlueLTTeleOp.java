@@ -27,7 +27,7 @@ public class BlueLTTeleOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
-    boolean ont;
+    boolean transferOn;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -51,14 +51,17 @@ public class BlueLTTeleOp extends LinearOpMode {
         });
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_UP).whenPressed(new ShooterPower(bot, true));
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new ShooterPower(bot, false));
+
         gp1.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
             new ActivateShooter(bot, bot.getRizz()).schedule();
             new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
         });
+
         gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new ActivateIntake(bot));
+
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
-            ont = !ont;
-            if(!ont){
+            transferOn = !transferOn;
+            if(!transferOn){
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
@@ -74,14 +77,17 @@ public class BlueLTTeleOp extends LinearOpMode {
                 ).schedule();
             }
         });
+
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(()->{
             bot.hood.up();
             bot.hood.setPos();
         });
+
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_RIGHT).whenPressed(()->{
             bot.hood.down();
             bot.hood.setPos();
         });
+
         /*
         gp2.getGamepadButton(GamepadKeys.Button.A).whileHeld(()->{
             bot.follower.turnTo(bot.getTargetAngle()); //changed to target angle, as it was set to rx before
@@ -123,6 +129,19 @@ public class BlueLTTeleOp extends LinearOpMode {
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
+            /*
+            if (bot.beamBreaks.isAllFalse()) {
+                new SequentialCommandGroup(
+                        new PositionSDLeft(bot, false),
+                        new PositionSDRight(bot, false),
+                        new WaitCommand(200),
+                        new ActivateTransfer(bot, false)
+                ).schedule();
+                if (transferOn) {
+                    transferOn = false;
+                }
+            }
+            */
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
@@ -130,7 +149,6 @@ public class BlueLTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
-            //TelemetryUtil.addData("bot aim power: ", bot.getAimPower());
             bot.loop();
         }
         bot.limelight.stop();

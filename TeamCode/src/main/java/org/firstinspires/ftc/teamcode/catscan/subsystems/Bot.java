@@ -77,7 +77,7 @@ public class Bot {
         hoodRight = hMap.get(Servo.class, "hoodRight");
         //sortLeft = hardwareMap.get(Servo.class, "sortLeft");
         //sortRight = hardwareMap.get(Servo.class, "sortRight");
-
+        /*
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
         leftTopBB = hMap.get(DigitalChannel.class, "leftTopBB");
@@ -86,7 +86,7 @@ public class Bot {
         rightMidBB.setMode(DigitalChannel.Mode.INPUT);
         leftTopBB.setMode(DigitalChannel.Mode.INPUT);
         bottomBB.setMode(DigitalChannel.Mode.INPUT);
-
+        */ //beam break stuff
         shooterLeft.setInverted(true);
         intake = hMap.get(DcMotorEx.class,"intake");
         intake.setDirection(DcMotor.Direction.REVERSE);
@@ -105,7 +105,7 @@ public class Bot {
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
         ll = new TheLimelight(limelight);
-        beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
+        //beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
         limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
