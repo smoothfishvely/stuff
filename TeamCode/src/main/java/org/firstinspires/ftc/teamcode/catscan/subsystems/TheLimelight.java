@@ -29,14 +29,14 @@ public class TheLimelight extends SubsystemBase {
     private static double aimTolerance = 0.67;
     private static double kp = .025;
     private static double ki = 0;
-    private static double kd = .0038;
-    private static double kf = .02;
+    private static double kd = .0035;
+    private static double kf = .015;
     PIDFController pidf = new PIDFController(kp,ki,kd,kf);
 
     double lastVel = 1300;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
-    public static int colorOffsetSig; // 1 for red, -1 for blue
+    public static int colorOffsetSig = -1; // 1 for red, -1 for blue
 
 
     LLResult result;
@@ -60,7 +60,10 @@ public class TheLimelight extends SubsystemBase {
     public double AimPID() {
 
             if (getGoalDistanceM() >3 && getGoalDistanceM() < 5) {
-                degreeOffset = -1 * colorOffsetSig;
+                degreeOffset =  0;
+            }
+            else {
+                degreeOffset = 5 * colorOffsetSig;
             }
 
             double error = tx - degreeOffset;
@@ -107,6 +110,7 @@ public class TheLimelight extends SubsystemBase {
         for (LLResultTypes.FiducialResult fr : fiducialResults) {
             motifId = fr.getFiducialId();
         }
+
         tx = result.getTx();
         ty = result.getTy();
         timeDiff = aimTimer.seconds();

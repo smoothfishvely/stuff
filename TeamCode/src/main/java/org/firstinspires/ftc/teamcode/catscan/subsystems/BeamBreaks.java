@@ -6,7 +6,13 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class BeamBreaks extends SubsystemBase {
     private DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
     private int numBalls;
-    private boolean rightTop, rightMid, leftTop, bottom;
+    private boolean rightTop = false;
+    private boolean rightMid = false;
+    private boolean leftTop = false;
+    private boolean bottom = false;
+
+
+
     public boolean realRightTop, realRightMid, realLeftTop, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
                        DigitalChannel leftTopBB, DigitalChannel bottomBB) {
@@ -14,15 +20,19 @@ public class BeamBreaks extends SubsystemBase {
         this.rightMidBB = rightMidBB;
         this.leftTopBB = leftTopBB;
         this.bottomBB = bottomBB;
+        this.rightTopBB.setMode(DigitalChannel.Mode.INPUT);
+        this.rightMidBB.setMode(DigitalChannel.Mode.INPUT);
+        this.leftTopBB.setMode(DigitalChannel.Mode.INPUT);
+        this.bottomBB.setMode(DigitalChannel.Mode.INPUT);
     }
 
     public int getNumBalls() {
         numBalls = 0;
 
-        if (rightTop) numBalls++;
-        if (rightMid) numBalls++;
-        if (leftTop) numBalls++; // redundant i think bc we wont use this in tele
-        if (bottom) numBalls++;
+        if (realRightTop) numBalls++;
+        if (realRightMid) numBalls++;
+        if (realLeftTop) numBalls++; // redundant i think bc we wont use this in tele
+        if (realBottom) numBalls++;
 
         return numBalls;
     }
@@ -59,5 +69,4 @@ public class BeamBreaks extends SubsystemBase {
         TelemetryUtil.addData("left top:" + leftTop);
         TelemetryUtil.addData("bottom:" + bottom);
     }
-
 }

@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -28,12 +29,14 @@ public class BlueLTTeleOp extends LinearOpMode {
     double rx;
     boolean shootOn;
     boolean transferOn;
+    DigitalChannel rightTopBB;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
         TelemetryUtil.setup(telemetry);
         bot = new Bot(hardwareMap, startPose, true);
-        bot.ll.colorOffsetSig = -1; // blue
+        //rightTopBB = hardwareMap.get(DigitalChannel.class, "rightTopBB");
+        //rightTopBB.setMode(DigitalChannel.Mode.INPUT);
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);
         bot.frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -149,6 +152,7 @@ public class BlueLTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
+            //TelemetryUtil.addData("right top: " + rightTopBB.getState());
             bot.loop();
         }
         bot.limelight.stop();

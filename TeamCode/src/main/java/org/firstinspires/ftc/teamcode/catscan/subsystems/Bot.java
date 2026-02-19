@@ -49,6 +49,7 @@ public class Bot {
     public NormalizedColorSensor colorSensor;
     private double power;
     PIDFController aimPIDF;
+    private double hoodCorrection;
     Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
@@ -77,7 +78,7 @@ public class Bot {
         hoodRight = hMap.get(Servo.class, "hoodRight");
         //sortLeft = hardwareMap.get(Servo.class, "sortLeft");
         //sortRight = hardwareMap.get(Servo.class, "sortRight");
-        /*
+
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
         leftTopBB = hMap.get(DigitalChannel.class, "leftTopBB");
@@ -86,7 +87,7 @@ public class Bot {
         rightMidBB.setMode(DigitalChannel.Mode.INPUT);
         leftTopBB.setMode(DigitalChannel.Mode.INPUT);
         bottomBB.setMode(DigitalChannel.Mode.INPUT);
-        */ //beam break stuff
+         //beam break stuff
         shooterLeft.setInverted(true);
         intake = hMap.get(DcMotorEx.class,"intake");
         intake.setDirection(DcMotor.Direction.REVERSE);
@@ -105,7 +106,7 @@ public class Bot {
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
         ll = new TheLimelight(limelight);
-        //beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
+       beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
         limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
@@ -125,7 +126,7 @@ public class Bot {
             return 1250;
         }
         else if (ll.getGoalDistanceM() > 3){
-            return 1600;
+            return 1520;
         }
         else {
             return (133 * ll.getGoalDistanceM()) + 1025;
@@ -133,7 +134,7 @@ public class Bot {
     }
     public double getHoodAngle() {
         if (ll.getGoalDistanceM() > 3) {
-            return .43;
+            return hoodCorrection;
         }
         else {
             return (.0806596 * ll.getGoalDistanceM()) + 0.26413;
@@ -171,6 +172,8 @@ public class Bot {
 
     public void loop(){
         goon = follower.getPose();
+        double shooterError = getRizz() - shooter.getVelocity();
+        hoodCorrection = .43 - (0.05 * shooterError);
         /*aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
         aimPIDF.setTolerance(.5);
         power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());*/
