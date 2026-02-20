@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.catscan.teleop;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -33,6 +34,7 @@ public class BlueLTTeleOp extends LinearOpMode {
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
+
         TelemetryUtil.setup(telemetry);
         bot = new Bot(hardwareMap, startPose, true);
         //rightTopBB = hardwareMap.get(DigitalChannel.class, "rightTopBB");
@@ -152,6 +154,7 @@ public class BlueLTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
+            TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
             //TelemetryUtil.addData("right top: " + rightTopBB.getState());
             bot.loop();
         }

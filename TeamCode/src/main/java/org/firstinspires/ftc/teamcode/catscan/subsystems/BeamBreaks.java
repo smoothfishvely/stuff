@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -11,11 +13,14 @@ public class BeamBreaks extends SubsystemBase {
     private boolean leftTop = false;
     private boolean bottom = false;
 
+    TelemetryManager tm;
 
 
     public boolean realRightTop, realRightMid, realLeftTop, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
                        DigitalChannel leftTopBB, DigitalChannel bottomBB) {
+        tm = PanelsTelemetry.INSTANCE.getTelemetry();
+
         this.rightTopBB = rightTopBB;
         this.rightMidBB = rightMidBB;
         this.leftTopBB = leftTopBB;
@@ -27,13 +32,6 @@ public class BeamBreaks extends SubsystemBase {
     }
 
     public int getNumBalls() {
-        numBalls = 0;
-
-        if (realRightTop) numBalls++;
-        if (realRightMid) numBalls++;
-        if (realLeftTop) numBalls++; // redundant i think bc we wont use this in tele
-        if (realBottom) numBalls++;
-
         return numBalls;
     }
 
@@ -64,9 +62,21 @@ public class BeamBreaks extends SubsystemBase {
             realBottom = true;
         }
 
-        TelemetryUtil.addData("right top:" + rightTop);
-        TelemetryUtil.addData("right mid:" + rightMid);
-        TelemetryUtil.addData("left top:" + leftTop);
-        TelemetryUtil.addData("bottom:" + bottom);
+        numBalls = 0;
+        if (rightTop) numBalls++;
+        if (rightMid) numBalls++;
+        if (bottom) numBalls++;
+
+        TelemetryUtil.addData("right top:", rightTop);
+        TelemetryUtil.addData("right mid:", rightMid);
+        TelemetryUtil.addData("left top:", leftTop);
+        TelemetryUtil.addData("bottom:", bottom);
+
+
+        tm.debug("right top:", rightTop);
+        tm.debug("right mid:", rightMid);
+        tm.debug("left top:", leftTop);
+        tm.debug("bottom:", bottom);
+        tm.update();
     }
 }
