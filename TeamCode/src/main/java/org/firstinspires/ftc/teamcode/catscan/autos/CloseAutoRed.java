@@ -130,7 +130,7 @@ public class CloseAutoRed extends LinearOpMode {
                         new AutoShootGPP(bot), //shoot first 3
                         new ParallelCommandGroup(
                                 new PositionDoors(bot, false, true),
-                                new ActivateIntake(bot),
+                                new ActivateIntake(bot, true),
                                 new FollowPathCommand(bot.follower, path[1])//go to pick up
                         ),
                         new WaitCommand(400), //3 balls in bot

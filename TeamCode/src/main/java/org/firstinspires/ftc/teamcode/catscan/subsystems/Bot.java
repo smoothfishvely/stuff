@@ -76,8 +76,8 @@ public class Bot {
         shooterRight = new MotorEx(hMap, "shooterRight");
         hoodLeft = hMap.get(Servo.class, "hoodLeft");
         hoodRight = hMap.get(Servo.class, "hoodRight");
-        //sortLeft = hardwareMap.get(Servo.class, "sortLeft");
-        //sortRight = hardwareMap.get(Servo.class, "sortRight");
+        sortLeft = hMap.get(Servo.class, "sortLeft");
+        sortRight = hMap.get(Servo.class, "sortRight");
 
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
@@ -101,7 +101,7 @@ public class Bot {
         goon = follower.getPose();
         theTransfer = new TheTransfer(transfer);
         shooterDoors = new ShooterDoors(shootDoorLeft, shootDoorRight);
-//        doors = new TheDoors(sortLeft, sortRight, colorSensor);
+       doors = new TheDoors(sortLeft, sortRight);
         hood = new TheHood(hoodLeft, hoodRight);
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
@@ -129,12 +129,12 @@ public class Bot {
             return 1520;
         }
         else {
-            return (133 * ll.getGoalDistanceM()) + 1025;
+            return (133 * ll.getGoalDistanceM()) + 1000;
         }
     }
     public double getHoodAngle() {
         if (ll.getGoalDistanceM() > 3) {
-            return hoodCorrection;
+            return .43;
         }
         else {
             return (.0806596 * ll.getGoalDistanceM()) + 0.26413;
@@ -173,7 +173,6 @@ public class Bot {
     public void loop(){
         goon = follower.getPose();
         double shooterError = getRizz() - shooter.getVelocity();
-        hoodCorrection = .43 - (0.05 * shooterError);
         /*aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
         aimPIDF.setTolerance(.5);
         power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());*/

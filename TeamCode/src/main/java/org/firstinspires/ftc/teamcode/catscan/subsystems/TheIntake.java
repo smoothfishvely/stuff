@@ -5,7 +5,7 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public class TheIntake extends SubsystemBase {
     private DcMotorEx intake;
-    boolean on = false;
+    boolean on;
     public TheIntake(DcMotorEx intake){
         this.intake = intake;
     }
@@ -13,8 +13,8 @@ public class TheIntake extends SubsystemBase {
     public boolean getOn(){
         return on;
     }
-    public void setOn(){
-        on = !on;
+    public void setOn(boolean on){
+        this.on = on;
         if(on){
             intake.setPower(1);
         } else {

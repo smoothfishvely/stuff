@@ -162,7 +162,7 @@ public class AuraRedAuto extends LinearOpMode {
                                 new FollowPathCommand(bot.follower, paths.Path1),
                                 new ActivateShooter(bot, 1)//on
                         ),
-                        new ActivateIntake(bot),
+                        new ActivateIntake(bot, true),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path2),
                         new FollowPathCommand(bot.follower, paths.Path4),

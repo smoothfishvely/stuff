@@ -7,7 +7,6 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 @Config
 public class TheTransfer extends SubsystemBase {
     private DcMotorEx transfer;
-    private boolean on;
     public TheTransfer(DcMotorEx transfer){
         this.transfer = transfer;
     }

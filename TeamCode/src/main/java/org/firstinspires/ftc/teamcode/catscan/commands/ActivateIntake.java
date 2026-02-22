@@ -6,12 +6,9 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
 public class ActivateIntake extends InstantCommand {
     private Bot bot;
-    public ActivateIntake(Bot bot){
-        this.bot = bot;
+    public ActivateIntake(Bot bot, boolean on){
+        bot.theIntake.setOn(on);
     }
 
-    public void initialize(){
-        bot.theIntake.setOn();
-    }
 
 }

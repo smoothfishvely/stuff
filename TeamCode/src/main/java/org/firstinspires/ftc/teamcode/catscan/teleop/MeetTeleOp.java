@@ -39,7 +39,7 @@ public class MeetTeleOp extends LinearOpMode {
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(new ShooterPower(bot, false));
         gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(new PositionDoors(bot, true, true));
 
-        gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(new ActivateIntake(bot));
+        //gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(new ActivateIntake(bot));
 
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(()->{
             bot.hood.up();

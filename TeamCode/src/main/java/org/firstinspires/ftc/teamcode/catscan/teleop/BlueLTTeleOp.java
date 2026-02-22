@@ -12,10 +12,10 @@ import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
@@ -29,16 +29,13 @@ public class BlueLTTeleOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
-    boolean transferOn;
-    DigitalChannel rightTopBB;
+    boolean transferOn, intOn;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
 
         TelemetryUtil.setup(telemetry);
         bot = new Bot(hardwareMap, startPose, true);
-        //rightTopBB = hardwareMap.get(DigitalChannel.class, "rightTopBB");
-        //rightTopBB.setMode(DigitalChannel.Mode.INPUT);
         GamepadEx gp1 = new GamepadEx(gamepad1);
         GamepadEx gp2 = new GamepadEx(gamepad2);
         bot.frontRight.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -62,7 +59,14 @@ public class BlueLTTeleOp extends LinearOpMode {
             new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
         });
 
-        gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(new ActivateIntake(bot));
+        gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
+            intOn = !intOn;
+            if(!intOn){
+                new ActivateIntake(bot, false).schedule();
+            } else {
+                new ActivateIntake(bot, true).schedule();
+            }
+        });
 
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
             transferOn = !transferOn;
@@ -70,14 +74,14 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new WaitCommand(200),
                         new ActivateTransfer(bot, false)
                 ).schedule();
+                bot.beamBreaks.setFalse();
             } else {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
-                        new WaitCommand(200),
+                        new ActivateIntake(bot, true),
                         new ActivateTransfer(bot, true)
                 ).schedule();
             }
@@ -93,18 +97,11 @@ public class BlueLTTeleOp extends LinearOpMode {
             bot.hood.setPos();
         });
 
-        /*
-        gp2.getGamepadButton(GamepadKeys.Button.A).whileHeld(()->{
-            bot.follower.turnTo(bot.getTargetAngle()); //changed to target angle, as it was set to rx before
-        });
-        gp2.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
-        });
-        gp2.getGamepadButton(GamepadKeys.Button.X).whileHeld(()->{
-            new ActivateShooter(bot, bot.getRizz()).schedule();
-            new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
-        });*/
-
         waitForStart();
+        new PositionDoors(bot, false, true).schedule();
+        new PositionSDLeft(bot, false).schedule();
+        new PositionSDRight(bot, false).schedule();
+        new ActivateTransfer(bot, false).schedule();
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
@@ -122,31 +119,32 @@ public class BlueLTTeleOp extends LinearOpMode {
                 bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            }
-            else {
+            } else {
                 rx = -gamepad2.right_stick_x * .967;
-                bot.frontLeft.setPower(Math.pow((y - x - rx),5) / d);
-                bot.backLeft.setPower(Math.pow((y + x - rx),5) / d);
-                bot.frontRight.setPower(Math.pow((y + x + rx),5) / d);
-                bot.backRight.setPower(Math.pow((y - x + rx),5) / d);
+                bot.frontLeft.setPower(Math.pow((y - x - rx),3) / d);
+                bot.backLeft.setPower(Math.pow((y + x - rx),3) / d);
+                bot.frontRight.setPower(Math.pow((y + x + rx),3) / d);
+                bot.backRight.setPower(Math.pow((y - x + rx),3) / d);
                 bot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
             /*
+            if(bot.beamBreaks.getNumBalls() == 3 && !transferOn){
+                new ActivateIntake(bot, false).schedule();
+                intOn = false;
+            }*/
+
             if (bot.beamBreaks.isAllFalse()) {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new WaitCommand(200),
                         new ActivateTransfer(bot, false)
                 ).schedule();
-                if (transferOn) {
-                    transferOn = false;
-                }
+                transferOn = false;
             }
-            */
+
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
@@ -155,7 +153,6 @@ public class BlueLTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
             TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
-            //TelemetryUtil.addData("right top: " + rightTopBB.getState());
             bot.loop();
         }
         bot.limelight.stop();

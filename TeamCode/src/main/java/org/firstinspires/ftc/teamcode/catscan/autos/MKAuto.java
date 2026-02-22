@@ -176,7 +176,7 @@ public class MKAuto extends LinearOpMode {
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path1),
                                 new ActivateShooter(bot, 1220),//on
-                                new ActivateIntake(bot)
+                                new ActivateIntake(bot, true)
                         ),
                         new WaitCommand(1000),
                         new Shoot(bot),

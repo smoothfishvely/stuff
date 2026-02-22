@@ -18,19 +18,23 @@ public class TheDoors extends SubsystemBase {
         this.doorLeft = doorLeft;
         this.doorRight = doorRight;
     }
+    public TheDoors(Servo doorLeft, Servo doorRight){
+        this.doorLeft = doorLeft;
+        this.doorRight = doorRight;
+    }
 
     public void open(boolean leftUp, boolean rightUp){
         this.rightUp = rightUp;
         this.leftUp = leftUp;
         if(leftUp){
-            doorLeft.setPosition(.80);//up
+            doorLeft.setPosition(.31);//up
         } else {
-            doorLeft.setPosition(.45);//down
+            doorLeft.setPosition(.1);//down
         }
         if(rightUp){
-            doorRight.setPosition(.45);//up
+            doorRight.setPosition(.74);//up
         } else {
-            doorRight.setPosition(.80);//down
+            doorRight.setPosition(.95);//down
         }
     }
 

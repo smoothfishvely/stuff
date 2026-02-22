@@ -36,12 +36,18 @@ public class BeamBreaks extends SubsystemBase {
     }
 
     public boolean isAllFalse() {
-        if (!rightTop && !rightMid && !bottom) {
+        if (numBalls == 0) {
             return true;
         }
         else {
             return false;
         }
+    }
+
+    public void setFalse() {
+        realRightTop = false;
+        realRightMid = false;
+        realBottom = false;
     }
 
     @Override
@@ -58,14 +64,14 @@ public class BeamBreaks extends SubsystemBase {
         if (rightMid && realRightTop) {
             realRightMid = true;
         }
-        if (bottom && realRightMid) {
+        if (bottom && realRightMid && realRightTop) {
             realBottom = true;
         }
 
         numBalls = 0;
-        if (rightTop) numBalls++;
-        if (rightMid) numBalls++;
-        if (bottom) numBalls++;
+        if (realRightTop) numBalls++;
+        if (realRightMid) numBalls++;
+        if (realBottom) numBalls++;
 
         TelemetryUtil.addData("right top:", rightTop);
         TelemetryUtil.addData("right mid:", rightMid);

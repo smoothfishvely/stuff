@@ -27,10 +27,10 @@ public class TheLimelight extends SubsystemBase {
             new YawPitchRollAngles(AngleUnit.DEGREES, 0,0,0,0));
 
     private static double aimTolerance = 0.67;
-    private static double kp = .025;
+    private static double kp = .02;
     private static double ki = 0;
-    private static double kd = .0035;
-    private static double kf = .015;
+    private static double kd = .0025;
+    private static double kf = 0.01;
     PIDFController pidf = new PIDFController(kp,ki,kd,kf);
 
     double lastVel = 1300;
@@ -44,6 +44,7 @@ public class TheLimelight extends SubsystemBase {
     private static double degreeOffset = 5 * colorOffsetSig;
     private final ElapsedTime aimTimer = new ElapsedTime();
     double timeDiff;
+    private double error = 0;
     public TheLimelight(Limelight3A limelight){
         this.limelight = limelight;
         result = limelight.getLatestResult();
@@ -66,7 +67,7 @@ public class TheLimelight extends SubsystemBase {
                 degreeOffset = 5 * colorOffsetSig;
             }
 
-            double error = tx - degreeOffset;
+            error = tx - degreeOffset;
 
             aimIntegral += error * timeDiff;
 
@@ -114,7 +115,7 @@ public class TheLimelight extends SubsystemBase {
         tx = result.getTx();
         ty = result.getTy();
         timeDiff = aimTimer.seconds();
-        //TelemetryUtil.addData("timer", timeDiff);
+        TelemetryUtil.addData("error", error);
 
         aimTimer.reset();
         pose = result.getBotpose();
