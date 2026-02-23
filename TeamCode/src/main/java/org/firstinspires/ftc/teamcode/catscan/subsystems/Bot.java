@@ -20,7 +20,6 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -29,7 +28,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Configurable
 public class Bot {
     public DcMotorEx frontRight, frontLeft, backRight, backLeft, intake, transfer;
-    public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight ;
+    public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight, rightLED, midLED, leftLED;
     public MotorEx shooterLeft, shooterRight;
     public TheHood hood;
     public DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
@@ -46,10 +45,12 @@ public class Bot {
     public Follower follower;
     public TheDoors doors;
     public BeamBreaks beamBreaks;
+    public TheLights lights;
     public NormalizedColorSensor colorSensor;
     private double power;
     PIDFController aimPIDF;
     private double hoodCorrection;
+    private double shooterError = 0;
     Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
@@ -78,6 +79,9 @@ public class Bot {
         hoodRight = hMap.get(Servo.class, "hoodRight");
         sortLeft = hMap.get(Servo.class, "sortLeft");
         sortRight = hMap.get(Servo.class, "sortRight");
+        rightLED = hMap.get(Servo.class, "rightLED");
+        midLED = hMap.get(Servo.class, "midLED");
+        leftLED = hMap.get(Servo.class, "leftLED");
 
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
@@ -101,12 +105,13 @@ public class Bot {
         goon = follower.getPose();
         theTransfer = new TheTransfer(transfer);
         shooterDoors = new ShooterDoors(shootDoorLeft, shootDoorRight);
-       doors = new TheDoors(sortLeft, sortRight);
+        doors = new TheDoors(sortLeft, sortRight);
         hood = new TheHood(hoodLeft, hoodRight);
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
         ll = new TheLimelight(limelight);
-       beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
+        beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
+        lights = new TheLights(rightLED, midLED, leftLED);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
         limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
@@ -165,22 +170,22 @@ public class Bot {
                 .getAsCoordinateSystem(PedroCoordinates.INSTANCE); //converts to pedro coordinate system
         follower.setPose(adjustedPose);
     }
-    public double getAimPower() {
-        power = Range.clip(power, -1, 1); //maxes power at -1 and 1 so it doesnt go over
-        return power;
+
+    public boolean isErrorSig() {
+        if (shooterError > 35) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     public void loop(){
         goon = follower.getPose();
-        double shooterError = getRizz() - shooter.getVelocity();
-        /*aimPIDF.setPIDF(aimKp, aimKI, aimKd, aimKf);
-        aimPIDF.setTolerance(.5);
-        power = aimPIDF.calculate(getTargetAngle(), goon.getHeading());*/
+        shooterError = getRizz() - shooter.getVelocity();
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
-        //TelemetryUtil.addData("target angle", Math.toDegrees(getTargetAngle()));
-        //TelemetryUtil.addData("error", error);
         TelemetryUtil.update();
         follower.update();
     }

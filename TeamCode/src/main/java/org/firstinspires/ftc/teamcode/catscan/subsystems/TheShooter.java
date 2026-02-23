@@ -15,36 +15,40 @@ public class TheShooter extends SubsystemBase {
     public static double kd = 0.00003;
     public static double kf = 0.0005;
     PIDFController epstein;
-    public static double velocity;
+    public static double targetVelocity;
+    private double error = 0;
     public TheShooter(MotorEx shooterLeft, MotorEx shooterRight){
         tm = PanelsTelemetry.INSTANCE.getTelemetry();
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
         epstein = new PIDFController(kp,ki,kd,kf);
-        velocity = 0;
+        targetVelocity = 0;
     }
 
-    public double getVelocity(){
-        return velocity;
+    public double getTargetVelocity(){
+        return targetVelocity;
+    }
+
+    public double getVelocity() {
+        return shooterLeft.getVelocity();
     }
 
     public void setVelocity(double vel){
-        velocity = vel;
+        targetVelocity = vel;
     }
-
     public void add(){
-        velocity += 20;
+        targetVelocity += 20;
     }
 
     public void subtract(){
-        velocity -= 20;
+        targetVelocity -= 20;
     }
 
     @Override
     public void periodic(){
-        if(velocity != 0) {
+        if(targetVelocity != 0) {
             epstein.setPIDF(kp, ki, kd, kf);
-            double power = epstein.calculate(shooterLeft.getVelocity(), velocity);
+            double power = epstein.calculate(shooterLeft.getVelocity(), targetVelocity);
             shooterLeft.set(power);
             shooterRight.set(power);
         } else {
@@ -52,7 +56,7 @@ public class TheShooter extends SubsystemBase {
             shooterRight.set(0);
         }
         tm.debug("velocity: ", shooterLeft.getVelocity());
-        tm.debug("target velocity: ", velocity);
+        tm.debug("target velocity: ", targetVelocity);
         tm.update();
     }
 }

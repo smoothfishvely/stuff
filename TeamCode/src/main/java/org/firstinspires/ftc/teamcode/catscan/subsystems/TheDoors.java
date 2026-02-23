@@ -27,9 +27,9 @@ public class TheDoors extends SubsystemBase {
         this.rightUp = rightUp;
         this.leftUp = leftUp;
         if(leftUp){
-            doorLeft.setPosition(.31);//up
+            doorLeft.setPosition(.8);//up
         } else {
-            doorLeft.setPosition(.1);//down
+            doorLeft.setPosition(.55);//down
         }
         if(rightUp){
             doorRight.setPosition(.74);//up

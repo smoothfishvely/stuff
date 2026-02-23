@@ -1,15 +1,12 @@
 package org.firstinspires.ftc.teamcode.catscan.teleop;
 
 import com.bylazar.configurables.annotations.Configurable;
-import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
@@ -144,9 +141,31 @@ public class BlueLTTeleOp extends LinearOpMode {
                 ).schedule();
                 transferOn = false;
             }
+            if (!bot.isErrorSig()) {
+                if (bot.beamBreaks.getNumBalls() == 3) {
+                    bot.lights.setIndividualPower(.5, .5, .5);
+                } else if (bot.beamBreaks.getNumBalls() == 2) {
+                    bot.lights.setIndividualPower(.5, .5, 0);
+                } else if (bot.beamBreaks.getNumBalls() == 1) {
+                    bot.lights.setIndividualPower(.5, 0, 0);
+                } else {
+                    bot.lights.setIndividualPower(0, 0, 0);
+                }
+            }
+            else {
+                if (bot.beamBreaks.getNumBalls() == 3) {
+                    bot.lights.setIndividualPower(.388, .388, .388);
+                } else if (bot.beamBreaks.getNumBalls() == 2) {
+                    bot.lights.setIndividualPower(.388, .388, 0);
+                } else if (bot.beamBreaks.getNumBalls() == 1) {
+                    bot.lights.setIndividualPower(.388, 0, 0);
+                } else {
+                    bot.lights.setIndividualPower(0, 0, 0);
+                }
+            }
 
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
-            TelemetryUtil.addData("target velocity: ", bot.shooter.getVelocity());
+            TelemetryUtil.addData("target velocity: ", bot.shooter.getTargetVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
             TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());

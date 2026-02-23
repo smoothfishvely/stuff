@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
-import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
+
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
@@ -70,7 +70,7 @@ public class MeetTeleOp extends LinearOpMode {
             bot.frontRight.setPower(Math.pow((y + x + rx),5) / d);
             bot.backRight.setPower(Math.pow((y - x + rx),5) / d);
             TelemetryUtil.addData("Velocity: ", bot.shooterLeft.getVelocity());
-            TelemetryUtil.addData("Motor Power: ", bot.shooter.getVelocity());
+            TelemetryUtil.addData("Motor Power: ", bot.shooter.getTargetVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
             bot.loop();
         }
