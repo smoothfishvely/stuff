@@ -16,9 +16,12 @@ import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
+import org.firstinspires.ftc.teamcode.catscan.commands.SetTransferPower;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
+
+import java.util.Set;
 
 @Configurable
 @TeleOp(name = "4102 lt drive blue")
@@ -71,15 +74,23 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new ActivateTransfer(bot, false)
+                        new SetTransferPower(bot, .2)
                 ).schedule();
                 bot.beamBreaks.setFalse();
-            } else {
+            } else if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
                         new ActivateIntake(bot, true),
-                        new ActivateTransfer(bot, true)
+                        new SetTransferPower(bot, .6)
+                ).schedule();
+            }
+            else {
+                new SequentialCommandGroup(
+                        new PositionSDLeft(bot, true),
+                        new PositionSDRight(bot, true),
+                        new ActivateIntake(bot, true),
+                        new SetTransferPower(bot, .8)
                 ).schedule();
             }
         });
@@ -98,7 +109,7 @@ public class BlueLTTeleOp extends LinearOpMode {
         new PositionDoors(bot, false, true).schedule();
         new PositionSDLeft(bot, false).schedule();
         new PositionSDRight(bot, false).schedule();
-        new ActivateTransfer(bot, false).schedule();
+        new SetTransferPower(bot, .2).schedule();
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
@@ -137,7 +148,7 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new ActivateTransfer(bot, false)
+                        new SetTransferPower(bot, .2)
                 ).schedule();
                 transferOn = false;
             }
