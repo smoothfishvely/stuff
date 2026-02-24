@@ -182,7 +182,7 @@ public class Bot {
 
     public void loop(){
         goon = follower.getPose();
-        shooterError = getRizz() - shooter.getVelocity();
+        shooterError = Math.abs(getRizz() - shooter.getVelocity());
         CommandScheduler.getInstance().run();
         TelemetryUtil.addData("Current Position", follower.getPose());
         TelemetryUtil.addData("motif", motif);
