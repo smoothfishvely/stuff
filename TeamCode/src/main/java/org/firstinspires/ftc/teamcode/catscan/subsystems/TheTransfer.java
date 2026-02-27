@@ -15,9 +15,10 @@ public class TheTransfer extends SubsystemBase {
     }
     public void setOn(boolean on){
         if(on){
-            transfer.setPower(.8);
+            transfer.setPower(.52);
         } else {
             transfer.setPower(.2);
         }
     }
 }
+//adb connect 192.168.43.1:5555

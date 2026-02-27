@@ -6,12 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
@@ -21,8 +22,6 @@ import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
-import java.util.Set;
-
 @Configurable
 @TeleOp(name = "4102 lt drive blue")
 public class BlueLTTeleOp extends LinearOpMode {
@@ -30,6 +29,13 @@ public class BlueLTTeleOp extends LinearOpMode {
     double rx;
     boolean shootOn;
     boolean transferOn, intOn;
+    private static double hood = 0;
+    private static double testTransferPower = 0;
+    private double batteryVoltage = 0;
+    private double nominalVoltage = 12.67;
+    private double sigmaTransferPower = .67;
+    private double adjustedTransferPower = 0;
+    private static int waitms =0;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -74,15 +80,16 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new SetTransferPower(bot, .2)
+                        new SetTransferPower(bot, .3)
                 ).schedule();
                 bot.beamBreaks.setFalse();
             } else if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
+                        new SetTransferPower(bot, testTransferPower),
+                        new WaitCommand(waitms),
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
-                        new ActivateIntake(bot, true),
-                        new SetTransferPower(bot, .6)
+                        new ActivateIntake(bot, true)
                 ).schedule();
             }
             else {
@@ -90,7 +97,8 @@ public class BlueLTTeleOp extends LinearOpMode {
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
                         new ActivateIntake(bot, true),
-                        new SetTransferPower(bot, .8)
+                        new WaitCommand(75),
+                        new SetTransferPower(bot, .65)
                 ).schedule();
             }
         });
@@ -104,6 +112,9 @@ public class BlueLTTeleOp extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
+        VoltageSensor battery = hardwareMap.voltageSensor.iterator().next();
+        batteryVoltage = battery.getVoltage();
+
 
         waitForStart();
         new PositionDoors(bot, false, true).schedule();
@@ -143,38 +154,19 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new ActivateIntake(bot, false).schedule();
                 intOn = false;
             }*/
-
+            /*
             if (bot.beamBreaks.isAllFalse()) {
                 new SequentialCommandGroup(
+                        new WaitCommand(500),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
                         new SetTransferPower(bot, .2)
                 ).schedule();
                 transferOn = false;
             }
-            if (!bot.isErrorSig()) {
-                if (bot.beamBreaks.getNumBalls() == 3) {
-                    bot.lights.setIndividualPower(.5, .5, .5);
-                } else if (bot.beamBreaks.getNumBalls() == 2) {
-                    bot.lights.setIndividualPower(.5, .5, 0);
-                } else if (bot.beamBreaks.getNumBalls() == 1) {
-                    bot.lights.setIndividualPower(.5, 0, 0);
-                } else {
-                    bot.lights.setIndividualPower(0, 0, 0);
-                }
-            }
-            else {
-                if (bot.beamBreaks.getNumBalls() == 3) {
-                    bot.lights.setIndividualPower(.388, .388, .388);
-                } else if (bot.beamBreaks.getNumBalls() == 2) {
-                    bot.lights.setIndividualPower(.388, .388, 0);
-                } else if (bot.beamBreaks.getNumBalls() == 1) {
-                    bot.lights.setIndividualPower(.388, 0, 0);
-                } else {
-                    bot.lights.setIndividualPower(0, 0, 0);
-                }
-            }
-
+            */
+            batteryVoltage = battery.getVoltage();
+            adjustedTransferPower = sigmaTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
             TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
             TelemetryUtil.addData("target velocity: ", bot.shooter.getTargetVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
@@ -183,6 +175,8 @@ public class BlueLTTeleOp extends LinearOpMode {
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
             TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
+            new PositionHood(bot, hood, (1.01- hood)).schedule();
+
             bot.loop();
         }
         bot.limelight.stop();

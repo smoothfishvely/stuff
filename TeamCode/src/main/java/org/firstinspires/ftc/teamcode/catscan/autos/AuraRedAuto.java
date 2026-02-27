@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.catscan.autos;
 
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootY;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startY;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootCloseXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootYCloseBlue;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -30,7 +27,7 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
 public class AuraRedAuto extends LinearOpMode {
     public static Pose startPose = new Pose(118.440, 127.580, Math.toRadians(45)); //fix
-    public static Pose shootPose = new Pose(shootX, shootY, Math.toRadians(shootHeading));
+    public static Pose shootPose = new Pose(shootCloseXBlue, shootYCloseBlue, Math.toRadians(shootHeadingBlue));
     Bot bot;
     public AuraRedAuto.Paths paths;
     public static class Paths {

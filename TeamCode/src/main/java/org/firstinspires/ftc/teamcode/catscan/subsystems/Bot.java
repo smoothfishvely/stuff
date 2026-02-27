@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.PedroCoordinates;
@@ -28,6 +30,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 @Configurable
 public class Bot {
     public DcMotorEx frontRight, frontLeft, backRight, backLeft, intake, transfer;
+    TelemetryManager tm;
+
     public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight, rightLED, midLED, leftLED;
     public MotorEx shooterLeft, shooterRight;
     public TheHood hood;
@@ -58,6 +62,8 @@ public class Bot {
     public boolean isBlue; //added this to use to determine target goal position, see getTargetAngle()
     private int motif;
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
+        tm = PanelsTelemetry.INSTANCE.getTelemetry();
+
 //        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
         aimPIDF = new PIDFController(aimKp,aimKI,aimKd,aimKf);
@@ -134,15 +140,15 @@ public class Bot {
             return 1520;
         }
         else {
-            return (133 * ll.getGoalDistanceM()) + 1000;
+            return (163 * ll.getGoalDistanceM()) + 890;
         }
     }
     public double getHoodAngle() {
-        if (ll.getGoalDistanceM() > 3) {
-            return .43;
+        if (ll.getGoalDistanceM() > 3 && ll.getGoalDistanceM() > 5) {
+            return .37;
         }
         else {
-            return (.0806596 * ll.getGoalDistanceM()) + 0.26413;
+            return (.0669 * ll.getGoalDistanceM()) + 0.195;
         }
     }
     public double getTargetAngle(){//made this get target angle so it can be used for the .turnTo version in teleOp
@@ -188,5 +194,37 @@ public class Bot {
         TelemetryUtil.addData("motif", motif);
         TelemetryUtil.update();
         follower.update();
+
+        if (!isErrorSig()) {
+            if (beamBreaks.getNumBalls() == 3) {
+                lights.setIndividualPower(.5, .5, .5);
+            } else if (beamBreaks.getNumBalls() == 2) {
+                lights.setIndividualPower(.5, .5, 0);
+            } else if (beamBreaks.getNumBalls() == 1) {
+                lights.setIndividualPower(.5, 0, 0);
+            } else {
+                lights.setIndividualPower(0, 0, 0);
+            }
+        }
+        else {
+            if (beamBreaks.getNumBalls() == 3) {
+                lights.setIndividualPower(.388, .388, .388);
+            } else if (beamBreaks.getNumBalls() == 2) {
+                lights.setIndividualPower(.388, .388, 0);
+            } else if (beamBreaks.getNumBalls() == 1) {
+                lights.setIndividualPower(.388, 0, 0);
+            } else {
+                lights.setIndividualPower(0, 0, 0);
+            }
+        }
+        tm.debug("right top:", beamBreaks.rightTop);
+        tm.debug("right mid:", beamBreaks.rightMid);
+        tm.debug("left top:", beamBreaks.leftTop);
+        tm.debug("bottom:", beamBreaks.bottom);
+
+
+        tm.debug("velocity: ", shooterLeft.getVelocity());
+        tm.debug("target velocity: ", shooter.getTargetVelocity());
+        tm.update();
     }
 }

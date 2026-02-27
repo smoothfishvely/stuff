@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode.catscan.autos;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeY;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootY;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startY;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeYBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootCloseXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootYCloseBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseYBlue;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -17,7 +15,6 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
@@ -26,19 +23,18 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
-import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
-public class MKAuto extends LinearOpMode {
-    public static Pose startPose = new Pose(startX, startY, Math.toRadians(startHeading)); //fix
-    public static Pose shootPose = new Pose(shootX, shootY, Math.toRadians(shootHeading));
-    public static Pose gateIntake = new Pose(gateIntakeX, gateIntakeY, Math.toRadians(gateIntakeHeading));
+public class FifteenBludAuto extends LinearOpMode {
+    public static Pose startPose = new Pose(startCloseXBlue, startCloseYBlue, Math.toRadians(startHeadingBlue)); //fix
+    public static Pose shootPose = new Pose(shootCloseXBlue, shootYCloseBlue, Math.toRadians(shootHeadingBlue));
+    public static Pose gateIntake = new Pose(gateIntakeXBlue, gateIntakeYBlue, Math.toRadians(gateIntakeHeadingBlue));
     Bot bot;
     public Paths paths;
 
@@ -59,7 +55,7 @@ public class MKAuto extends LinearOpMode {
                                     startPose,
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(startHeading), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(startHeadingBlue), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -70,7 +66,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(60.821, 59.904),
                                     new Pose(9.500, 59.000)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180), .6)
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180), .6)
 
                     .build();
 
@@ -80,7 +76,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(47.687, 56.696),
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -90,7 +86,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(47.320, 57.021),
                                     gateIntake
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(gateIntakeHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(gateIntakeHeadingBlue))
 
                     .build();
 
@@ -100,7 +96,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(47.302, 57.117),
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeading), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingBlue), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -110,7 +106,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(47.318, 56.925),
                                     gateIntake
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(gateIntakeHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(gateIntakeHeadingBlue))
 
                     .build();
 
@@ -120,7 +116,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(47.437, 57.096),
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeading), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingBlue), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -130,7 +126,7 @@ public class MKAuto extends LinearOpMode {
                                     new Pose(53.303, 84.261),
                                     new Pose(16.532, 84.256)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180), .6)
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180), .6)
 
                     .build();
 
@@ -140,7 +136,7 @@ public class MKAuto extends LinearOpMode {
 
                                     new Pose(57.825, 104.755)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(150))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(148))
 
                     .build();
         }
@@ -155,7 +151,10 @@ public class MKAuto extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .45, .56 )
+                        new PositionHood(bot, .29, (1.01 - .29)),
+                        new PositionSDLeft(bot, true),
+                        new PositionSDRight(bot, false),
+                        new PositionDoors(bot, true, false)
                 )
         );
         while(opModeInInit()){
@@ -175,27 +174,27 @@ public class MKAuto extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path1),
-                                new ActivateShooter(bot, 1220),//on
+                                new ActivateShooter(bot, 1120),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new WaitCommand(1000),
+                        new WaitCommand(200),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path2),
                         new FollowPathCommand(bot.follower, paths.Path3),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path4),
-                        new WaitCommand(1400),
+                        new WaitCommand(1200),
                         new FollowPathCommand(bot.follower, paths.Path5),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path6),
-                        new WaitCommand(1400),
+                        new WaitCommand(1200),
                         new FollowPathCommand(bot.follower, paths.Path7),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path8),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path9),
-                                new PositionHood(bot, .43, .58),
-                                new ActivateShooter(bot, 1200)
+                                new PositionHood(bot, .28, (1.01-.28)),
+                                new ActivateShooter(bot, 1080)//on
                         ),
                         new Shoot(bot),
                         new PositionSDRight(bot, true),

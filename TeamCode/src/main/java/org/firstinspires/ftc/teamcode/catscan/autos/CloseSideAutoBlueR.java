@@ -1,13 +1,11 @@
 package org.firstinspires.ftc.teamcode.catscan.autos;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootY;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeading;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startX;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startY;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootCloseXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootYCloseBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseYBlue;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -16,26 +14,22 @@ import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.PathChain;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
-import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.ActivateTransfer;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
-import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
 public class CloseSideAutoBlueR extends LinearOpMode {
-    public static Pose startPose = new Pose(startX, startY, Math.toRadians(startHeading)); //fix
-    public static Pose shootPose = new Pose(shootX, shootY, Math.toRadians(shootHeading));
+    public static Pose startPose = new Pose(startCloseXBlue, startCloseYBlue, Math.toRadians(startHeadingBlue)); //fix
+    public static Pose shootPose = new Pose(shootCloseXBlue, shootYCloseBlue, Math.toRadians(shootHeadingBlue));
     Bot bot;
     public Paths paths;
     public static class Paths {
@@ -54,7 +48,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                                     startPose,
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(135), Math.toRadians(shootHeadingBlue))
                     .setBrakingStrength(0.7)
                     .build();
 
@@ -65,7 +59,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                                     new Pose(63.73, 84.89),
                                     new Pose(15, 84)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180))
                     .setBrakingStrength(0.7)
                     .build();
 
@@ -85,7 +79,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
 
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -96,7 +90,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                                     new Pose(61.68, 59.85),
                                     new Pose(10.31, 59.3)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180))
                     .setBrakingStrength(0.7)
                     .build();
 
@@ -106,7 +100,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                                     new Pose(54.8, 60.5),
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeading))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -117,7 +111,7 @@ public class CloseSideAutoBlueR extends LinearOpMode {
                                     new Pose(59.8, 34),
                                     new Pose(9.14, 35.64)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeading), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180))
                     .setBrakingStrength(0.7)
                     .build();
 

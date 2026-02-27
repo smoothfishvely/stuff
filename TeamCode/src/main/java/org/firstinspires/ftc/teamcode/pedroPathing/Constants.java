@@ -18,25 +18,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
-            .forwardZeroPowerAcceleration(-44.7129570434029)
-            .lateralZeroPowerAcceleration(-56.21590825368109)
+            .forwardZeroPowerAcceleration(-31.725641894874034)
+            .lateralZeroPowerAcceleration(-62.26295639567683)
             .useSecondaryTranslationalPIDF(true)
             .useSecondaryHeadingPIDF(true)
-            .useSecondaryDrivePIDF(false)
-            .translationalPIDFCoefficients(new PIDFCoefficients(0.25, 0, 0.02, 0))
-            .headingPIDFCoefficients(new PIDFCoefficients(1.67,0,.0167,.01))
-            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.025,0,.00001,.6,.01))
+            .useSecondaryDrivePIDF(true)
+            .translationalPIDFCoefficients(new PIDFCoefficients(0.27, 0, 0.022, 0))
+            .headingPIDFCoefficients(new PIDFCoefficients(1.73,0,.0167,.01))
+            .drivePIDFCoefficients(new FilteredPIDFCoefficients(.0255,0,.00135,.6,.01))
 
-            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(.33,0,.025,0))
-            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2.26,0,.026,0))
-//            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0,0,0,0,0))
+            .secondaryTranslationalPIDFCoefficients(new PIDFCoefficients(.34,0,.029,0))
+            .secondaryHeadingPIDFCoefficients(new PIDFCoefficients(2.9,0,.026,0))
+            .secondaryDrivePIDFCoefficients(new FilteredPIDFCoefficients(0.051,0,.0027,0,0.01))
 
             .mass(13);
 
     public static MecanumConstants driveConstants = new MecanumConstants()
             .maxPower(1)
-            .xVelocity(68.74607260396162)
-            .yVelocity(63.05969526636319)
+            .xVelocity(76.79950431763658)
+            .yVelocity(61.96788205124263)
             .rightFrontMotorName("frontRight")
             .rightRearMotorName("backRight")
             .leftRearMotorName("backLeft")
@@ -47,8 +47,8 @@ public class Constants {
             .rightRearMotorDirection(DcMotorSimple.Direction.FORWARD);
 
     public static PinpointConstants localizerConstants = new PinpointConstants()
-            .forwardPodY(5)//edit
-            .strafePodX(-3)//edit
+            .forwardPodY(5)
+            .strafePodX(-3)
             .distanceUnit(DistanceUnit.INCH)
             .hardwareMapName("pinpoint")
             .encoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD)

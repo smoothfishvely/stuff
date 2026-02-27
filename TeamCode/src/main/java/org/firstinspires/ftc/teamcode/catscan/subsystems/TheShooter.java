@@ -7,9 +7,8 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
 @Configurable
-public class TheShooter extends SubsystemBase {
+public class   TheShooter extends SubsystemBase {
     MotorEx shooterLeft, shooterRight;
-    TelemetryManager tm;
     public static double kp = 0.0029;
     public static double ki = 0;
     public static double kd = 0.00003;
@@ -18,10 +17,9 @@ public class TheShooter extends SubsystemBase {
     public static double targetVelocity;
     private double error = 0;
     public TheShooter(MotorEx shooterLeft, MotorEx shooterRight){
-        tm = PanelsTelemetry.INSTANCE.getTelemetry();
         this.shooterLeft = shooterLeft;
         this.shooterRight = shooterRight;
-        epstein = new PIDFController(kp,ki,kd,kf);
+        epstein = new PIDFController(kp, ki, kd, kf);
         targetVelocity = 0;
     }
 
@@ -55,8 +53,5 @@ public class TheShooter extends SubsystemBase {
             shooterLeft.set(0);
             shooterRight.set(0);
         }
-        tm.debug("velocity: ", shooterLeft.getVelocity());
-        tm.debug("target velocity: ", targetVelocity);
-        tm.update();
     }
 }

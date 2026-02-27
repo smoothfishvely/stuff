@@ -8,18 +8,16 @@ import com.seattlesolvers.solverslib.command.SubsystemBase;
 public class BeamBreaks extends SubsystemBase {
     private DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
     private int numBalls;
-    private boolean rightTop = false;
-    private boolean rightMid = false;
-    private boolean leftTop = false;
-    private boolean bottom = false;
+    public boolean rightTop = false;
+    public boolean rightMid = false;
+    public boolean leftTop = false;
+    public boolean bottom = false;
 
-    TelemetryManager tm;
 
 
     public boolean realRightTop, realRightMid, realLeftTop, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
                        DigitalChannel leftTopBB, DigitalChannel bottomBB) {
-        tm = PanelsTelemetry.INSTANCE.getTelemetry();
 
         this.rightTopBB = rightTopBB;
         this.rightMidBB = rightMidBB;
@@ -77,12 +75,5 @@ public class BeamBreaks extends SubsystemBase {
         TelemetryUtil.addData("right mid:", rightMid);
         TelemetryUtil.addData("left top:", leftTop);
         TelemetryUtil.addData("bottom:", bottom);
-
-
-        tm.debug("right top:", rightTop);
-        tm.debug("right mid:", rightMid);
-        tm.debug("left top:", leftTop);
-        tm.debug("bottom:", bottom);
-        tm.update();
     }
 }
