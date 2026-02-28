@@ -104,7 +104,6 @@ public class Bot {
         shooterLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         shooterRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.FLOAT);
         limelight = hMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(1);
         limelight.setPollRateHz(90);
         follower = Constants.createFollower(hMap);
         follower.setStartingPose(startPose);

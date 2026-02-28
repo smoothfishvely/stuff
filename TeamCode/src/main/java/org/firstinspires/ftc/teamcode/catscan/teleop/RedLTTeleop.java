@@ -24,8 +24,8 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Configurable
-@TeleOp(name = "4102 lt drive blue")
-public class BlueLTTeleOp extends LinearOpMode {
+@TeleOp(name = "4102 lt drive red")
+public class RedLTTeleop extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
@@ -78,7 +78,6 @@ public class BlueLTTeleOp extends LinearOpMode {
             new SetIntakePower(bot, -1).schedule();
         });
 
-
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
             transferOn = !transferOn;
             if(!transferOn){
@@ -126,7 +125,8 @@ public class BlueLTTeleOp extends LinearOpMode {
         new PositionSDLeft(bot, false).schedule();
         new PositionSDRight(bot, false).schedule();
         new SetTransferPower(bot, .2).schedule();
-        bot.limelight.pipelineSwitch(1);
+        bot.limelight.pipelineSwitch(0);
+        bot.ll.setDegreeOffset(-5);
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);

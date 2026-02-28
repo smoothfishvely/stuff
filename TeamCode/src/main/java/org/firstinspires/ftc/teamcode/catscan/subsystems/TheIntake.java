@@ -13,6 +13,10 @@ public class TheIntake extends SubsystemBase {
     public boolean getOn(){
         return on;
     }
+    public void setPower(double power){
+        intake.setPower(power);
+    }
+
     public void setOn(boolean on){
         this.on = on;
         if(on){

@@ -13,7 +13,7 @@ public class Shoot extends SequentialCommandGroup {
                 new PositionSDRight(bot, true),
                 new WaitCommand(75),
                 new ActivateTransfer(bot, true), //on
-                new WaitCommand(1400),
+                new WaitCommand(700),
                 new ActivateTransfer(bot, false),//off
                 new PositionSDRight(bot, false),
                 new PositionSDLeft(bot, false)
