@@ -34,7 +34,7 @@ public class BlueLTTeleOp extends LinearOpMode {
     private static double testTransferPower = 0;
     private double batteryVoltage = 0;
     private double nominalVoltage = 12.67;
-    private double sigmaTransferPower = .67;
+    private double sigmaTransferPower = .65;
     private double adjustedTransferPower = 0;
     private static int waitms =0;
     Bot bot;

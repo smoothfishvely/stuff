@@ -158,7 +158,7 @@ public class EighteenBludAuton extends LinearOpMode {
                                     new Pose(16.532, 84.256),
                                     new Pose(54, 104.755)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(148))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(146))
 
                     .build();
         }

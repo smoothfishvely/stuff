@@ -10,8 +10,8 @@ public class AutoConstants {
     public static double shootCloseXBlue = 54;
     public static double shootYCloseBlue = 88;
     public static double shootHeadingBlue = 131;
-    public static double gateIntakeXBlue = 10;
-    public static double gateIntakeYBlue = 62;
+    public static double gateIntakeXBlue = 13;
+    public static double gateIntakeYBlue = 61;
     public static double gateIntakeHeadingBlue = 148;
     public static double startFarXBlue = 57;
     public static double startFarYBlue = 8.8;
