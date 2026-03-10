@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -31,7 +32,6 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 public class Bot {
     public DcMotorEx frontRight, frontLeft, backRight, backLeft, intake, transfer;
     TelemetryManager tm;
-
     public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight, rightLED, midLED, leftLED;
     public MotorEx shooterLeft, shooterRight;
     public TheHood hood;
@@ -50,11 +50,18 @@ public class Bot {
     public TheDoors doors;
     public BeamBreaks beamBreaks;
     public TheLights lights;
+    public VoltageSensor battery;
     public NormalizedColorSensor colorSensor;
     private double power;
     PIDFController aimPIDF;
     private double hoodCorrection;
     private double shooterError = 0;
+    private double batteryVoltage = 0;
+    private double nominalVoltage = 13.8;
+    private double sigmaTransferPower = .63;
+    private static double sigmaFarTransferPower = .49;
+    private double adjustedTransferPower = 0;
+    private double adjustedFarTransferPower = 0;
     Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
@@ -118,6 +125,10 @@ public class Bot {
         beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
         lights = new TheLights(rightLED, midLED, leftLED);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
+
+        battery = hMap.voltageSensor.iterator().next();
+        batteryVoltage = battery.getVoltage();
+
         limelight.start();
 //        if (colorSensor instanceof SwitchableLight) {
 //            ((SwitchableLight)colorSensor).enableLight(true);
@@ -133,21 +144,21 @@ public class Bot {
     }
     public double getRizz(){
         if (ll.getGoalDistanceM() > 5) {
-            return 1250;
+            return 1120;
         }
         else if (ll.getGoalDistanceM() > 3){
             return 1520;
         }
         else {
-            return (163 * ll.getGoalDistanceM()) + 890;
+            return (193 * ll.getGoalDistanceM()) + 802;
         }
     }
     public double getHoodAngle() {
-        if (ll.getGoalDistanceM() > 3 && ll.getGoalDistanceM() > 5) {
-            return .37;
+        if (ll.getGoalDistanceM() > 3 ) {
+            return .3;
         }
         else {
-            return (.0669 * ll.getGoalDistanceM()) + 0.195;
+            return (0.0836 * ll.getGoalDistanceM()) + 0.15;
         }
     }
     public double getTargetAngle(){//made this get target angle so it can be used for the .turnTo version in teleOp
@@ -185,11 +196,24 @@ public class Bot {
         }
     }
 
+    public double getAdjustedTransferPower() {
+        return adjustedTransferPower;
+    }
+
+    public double getAdjustedFarTransferPower() {
+        return adjustedFarTransferPower;
+    }
+
     public void loop(){
         goon = follower.getPose();
+        batteryVoltage = battery.getVoltage();
+        adjustedTransferPower = sigmaTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
+        adjustedFarTransferPower = sigmaFarTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
         shooterError = Math.abs(getRizz() - shooter.getVelocity());
         CommandScheduler.getInstance().run();
-        TelemetryUtil.addData("Current Position", follower.getPose());
+//        TelemetryUtil.addData("transfer Power: ", getAdjustedTransferPower());
+        TelemetryUtil.addData("Velocity: ", shooterRight.getVelocity());
+        TelemetryUtil.addData("target velocity: ", shooter.getTargetVelocity());
         TelemetryUtil.addData("motif", motif);
         TelemetryUtil.update();
         follower.update();

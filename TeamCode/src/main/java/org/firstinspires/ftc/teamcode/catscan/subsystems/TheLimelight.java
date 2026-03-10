@@ -39,7 +39,7 @@ public class TheLimelight extends SubsystemBase {
     public static int colorOffsetSig = -1; // 1 for red, -1 for blue
     LLResult result;
 
-    private static double degreeOffset = -10;
+    private static double degreeOffset = 1;
     private final ElapsedTime aimTimer = new ElapsedTime();
     double timeDiff;
     private double error = 0;
@@ -83,7 +83,7 @@ public class TheLimelight extends SubsystemBase {
         degreeOffset = degree;
     }
     public double getGoalDistanceM() {
-        return ((targetHeight) / (Math.tan(Math.toRadians(ty))));
+        return ((targetHeight) / (Math.tan(Math.toRadians(ty)))) + .1;
     }
 
     public double getAimPower() {

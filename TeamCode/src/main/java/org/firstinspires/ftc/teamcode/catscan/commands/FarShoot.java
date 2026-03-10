@@ -6,19 +6,19 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
-public class Shoot extends SequentialCommandGroup {
-    public Shoot(Bot bot){
+public class FarShoot extends SequentialCommandGroup {
+    public FarShoot(Bot bot){
         addCommands(
                 new PositionSDLeft(bot, true),
                 new PositionSDRight(bot, true),
                 new WaitCommand(75),
-                new SetTransferPower(bot, bot.getAdjustedTransferPower()), //on
-                new WaitCommand(700),
+                new SetTransferPower(bot, bot.getAdjustedFarTransferPower()), //on
+                new WaitCommand(1400),
                 new SetTransferPower(bot, .2),//off
                 new PositionSDRight(bot, false),
                 new PositionSDLeft(bot, false)
 
-       );
+        );
         addRequirements(bot.shooter, bot.shooterDoors, bot.theTransfer);
     }
 }

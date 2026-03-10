@@ -33,10 +33,6 @@ public class RedLTTeleop extends LinearOpMode {
     boolean transferOn, intOn;
     private static double hood = 0;
     private static double testTransferPower = 0;
-    private double batteryVoltage = 0;
-    private double nominalVoltage = 12.67;
-    private double sigmaTransferPower = .65;
-    private double adjustedTransferPower = 0;
     private static int waitms =0;
     Bot bot;
     @Override
@@ -76,7 +72,11 @@ public class RedLTTeleop extends LinearOpMode {
             }
         });
         gp1.getGamepadButton(GamepadKeys.Button.X).whenPressed(()->{
-            new SetIntakePower(bot, -1).schedule();
+            new SequentialCommandGroup(
+                    new SetIntakePower(bot, -1),
+                    new WaitCommand(200),
+                    new SetIntakePower(bot, 1)
+            ).schedule();
         });
 
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
@@ -90,7 +90,7 @@ public class RedLTTeleop extends LinearOpMode {
                 bot.beamBreaks.setFalse();
             } else if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
-                        new SetTransferPower(bot, testTransferPower),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
                         new WaitCommand(waitms),
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
@@ -103,7 +103,7 @@ public class RedLTTeleop extends LinearOpMode {
                         new PositionSDRight(bot, true),
                         new ActivateIntake(bot, true),
                         new WaitCommand(75),
-                        new SetTransferPower(bot, .65)
+                        new SetTransferPower(bot, bot.getAdjustedTransferPower())
                 ).schedule();
             }
         });
@@ -117,8 +117,6 @@ public class RedLTTeleop extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
-        VoltageSensor battery = hardwareMap.voltageSensor.iterator().next();
-        batteryVoltage = battery.getVoltage();
 
 
         waitForStart();
@@ -127,7 +125,7 @@ public class RedLTTeleop extends LinearOpMode {
         new PositionSDRight(bot, false).schedule();
         new SetTransferPower(bot, .2).schedule();
         bot.limelight.pipelineSwitch(0);
-        bot.ll.setDegreeOffset(-5);
+        bot.ll.setDegreeOffset(-1);
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
@@ -172,10 +170,7 @@ public class RedLTTeleop extends LinearOpMode {
                 transferOn = false;
             }
             */
-            batteryVoltage = battery.getVoltage();
-            adjustedTransferPower = sigmaTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
-            TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
-            TelemetryUtil.addData("target velocity: ", bot.shooter.getTargetVelocity());
+
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
             TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());

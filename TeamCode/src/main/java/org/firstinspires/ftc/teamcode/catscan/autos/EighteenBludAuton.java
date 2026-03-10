@@ -173,10 +173,10 @@ public class EighteenBludAuton extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .3, (1.01 - .3)),
+                        new PositionHood(bot, .28, (1.01 - .28)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new PositionDoors(bot, true, false)
+                        new PositionDoors(bot, false, true)
                 )
         );
         while(opModeInInit()){
@@ -196,7 +196,7 @@ public class EighteenBludAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path1),
-                                new ActivateShooter(bot, 1120),//on
+                                new ActivateShooter(bot, 1110),//on
                                 new ActivateIntake(bot, true)
                         ),
                         new Shoot(bot),

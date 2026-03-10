@@ -9,10 +9,10 @@ import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 @Configurable
 public class   TheShooter extends SubsystemBase {
     MotorEx shooterLeft, shooterRight;
-    public static double kp = 0.0029;
+    public static double kp = 0.03;
     public static double ki = 0;
-    public static double kd = 0.00003;
-    public static double kf = 0.0005;
+    public static double kd = 0.0012;
+    public static double kf = 0.001;
     PIDFController epstein;
     public static double targetVelocity;
     private double error = 0;

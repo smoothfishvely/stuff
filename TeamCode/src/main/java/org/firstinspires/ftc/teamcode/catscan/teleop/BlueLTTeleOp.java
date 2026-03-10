@@ -32,10 +32,6 @@ public class BlueLTTeleOp extends LinearOpMode {
     boolean transferOn, intOn;
     private static double hood = 0;
     private static double testTransferPower = 0;
-    private double batteryVoltage = 0;
-    private double nominalVoltage = 12.67;
-    private double sigmaTransferPower = .65;
-    private double adjustedTransferPower = 0;
     private static int waitms =0;
     Bot bot;
     @Override
@@ -90,11 +86,12 @@ public class BlueLTTeleOp extends LinearOpMode {
                 bot.beamBreaks.setFalse();
             } else if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
-                        new SetTransferPower(bot, testTransferPower),
-                        new WaitCommand(waitms),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
                         new ActivateIntake(bot, true)
+                        //far shooting ideal transfer pow : .5, ideal overall pow 12.8 v, velocity 1520, hood .3
+                        //with surgical tubing : transfer pow- .68, ideal overall: 12.4 velocity 1520, hood .3
                 ).schedule();
             }
             else {
@@ -103,9 +100,16 @@ public class BlueLTTeleOp extends LinearOpMode {
                         new PositionSDRight(bot, true),
                         new ActivateIntake(bot, true),
                         new WaitCommand(75),
-                        new SetTransferPower(bot, .65)
+                        new SetTransferPower(bot, bot.getAdjustedTransferPower())
                 ).schedule();
             }
+        });
+
+        gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(()->{
+            bot.ll.setDegreeOffset(-10);
+        });
+        gp1.getGamepadButton(GamepadKeys.Button.LEFT_BUMPER).whenPressed(()->{
+            bot.ll.setDegreeOffset(1);
         });
 
         gp1.getGamepadButton(GamepadKeys.Button.DPAD_LEFT).whenPressed(()->{
@@ -117,12 +121,8 @@ public class BlueLTTeleOp extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
-        VoltageSensor battery = hardwareMap.voltageSensor.iterator().next();
-        batteryVoltage = battery.getVoltage();
-
-
         waitForStart();
-        new PositionDoors(bot, false, true).schedule();
+        new PositionDoors(bot, false , true).schedule();
         new PositionSDLeft(bot, false).schedule();
         new PositionSDRight(bot, false).schedule();
         new SetTransferPower(bot, .2).schedule();
@@ -171,17 +171,13 @@ public class BlueLTTeleOp extends LinearOpMode {
                 transferOn = false;
             }
             */
-            batteryVoltage = battery.getVoltage();
-            adjustedTransferPower = sigmaTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
-            TelemetryUtil.addData("Velocity: ", bot.shooterRight.getVelocity());
-            TelemetryUtil.addData("target velocity: ", bot.shooter.getTargetVelocity());
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
             TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
             TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
-
+            new PositionHood(bot, hood, (1.01- hood)).schedule();
             bot.loop();
         }
         bot.limelight.stop();
