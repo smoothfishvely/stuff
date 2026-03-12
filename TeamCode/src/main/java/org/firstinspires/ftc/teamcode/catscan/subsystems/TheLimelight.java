@@ -82,6 +82,7 @@ public class TheLimelight extends SubsystemBase {
     public void setDegreeOffset(double degree) {
         degreeOffset = degree;
     }
+
     public double getGoalDistanceM() {
         return ((targetHeight) / (Math.tan(Math.toRadians(ty)))) + .1;
     }

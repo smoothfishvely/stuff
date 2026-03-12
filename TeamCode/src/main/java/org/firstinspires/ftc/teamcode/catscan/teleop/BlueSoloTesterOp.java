@@ -13,31 +13,25 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.FarShoot;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.SetIntakePower;
 import org.firstinspires.ftc.teamcode.catscan.commands.SetTransferPower;
-import org.firstinspires.ftc.teamcode.catscan.commands.SetTransferVelocity;
-import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Configurable
-@TeleOp(name = "4102 lt drive blue")
-public class BlueLTTeleOp extends LinearOpMode {
+@TeleOp(name = "tester solo drive")
+public class BlueSoloTesterOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
     boolean transferOn, intOn;
     private static double hood = 0;
     private static double testTransferPower = 0;
-    private static boolean panelsHoodAdjustment = false;
-    public static double targetTransferVelocity = 0;
-
     private static int waitms =0;
     Bot bot;
     @Override
@@ -76,24 +70,39 @@ public class BlueLTTeleOp extends LinearOpMode {
                 new ActivateIntake(bot, true).schedule();
             }
         });
-        gp1.getGamepadButton(GamepadKeys.Button.X).whenPressed(()->{
-            new SequentialCommandGroup(
-                    new SetIntakePower(bot, -1),
-                    new WaitCommand(50),
-                    new SetIntakePower(bot,1)
-            ).schedule();
+        gp1.getGamepadButton(GamepadKeys.Button.RIGHT_BUMPER).whenPressed(()->{
+            new SetIntakePower(bot, -1).schedule();
         });
 
 
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
-            if (bot.ll.getGoalDistanceM() > 3 ){
+            transferOn = !transferOn;
+            if(!transferOn){
                 new SequentialCommandGroup(
-                        new FarShoot(bot)
+                        new PositionSDLeft(bot, false),
+                        new PositionSDRight(bot, false),
+                        new SetTransferPower(bot, .3)
                 ).schedule();
-            } else {
+                bot.beamBreaks.setFalse();
+            } else if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
-                        new Shoot(bot)
-                        ).schedule();
+                        new PositionSDLeft(bot, true),
+                        new PositionSDRight(bot, true),
+                        new WaitCommand(75),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
+                        new ActivateIntake(bot, true)
+                        //far shooting ideal transfer pow : .5, ideal overall pow 12.8 v, velocity 1520, hood .3
+                        //with surgical tubing : transfer pow- .68, ideal overall: 12.4 velocity 1520, hood .3
+                ).schedule();
+            }
+            else {
+                new SequentialCommandGroup(
+                        new PositionSDLeft(bot, true),
+                        new PositionSDRight(bot, true),
+                        new ActivateIntake(bot, true),
+                        new WaitCommand(75),
+                        new SetTransferPower(bot, bot.getAdjustedTransferPower())
+                ).schedule();
             }
         });
 
@@ -119,15 +128,16 @@ public class BlueLTTeleOp extends LinearOpMode {
         new PositionSDRight(bot, false).schedule();
         new SetTransferPower(bot, .2).schedule();
         bot.limelight.pipelineSwitch(1);
+        bot.ll.setDegreeOffset(1);
         bot.follower.startTeleopDrive();
         while(!isStopRequested() && opModeIsActive()){
-            double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
-            double y = (-gamepad2.left_stick_y);
-            double x = (-gamepad2.left_stick_x * 1.1);
-            if (gamepad2.x) {
+            double d = Math.max(Math.abs(-gamepad1.left_stick_y) + Math.abs(-gamepad1.left_stick_x * 1.1) + Math.abs(rx), 1);
+            double y = (-gamepad1.left_stick_y);
+            double x = (-gamepad1.left_stick_x * 1.1);
+            if (gamepad1.x) {
                 rx = -bot.ll.AimPID(); // tests it with ll , could be switched to the pedro coordinate based pid in bot class
-                x = (-gamepad2.left_stick_x * .8);
-                y = (-gamepad2.left_stick_y * .7);
+                x = (-gamepad1.left_stick_x * .8);
+                y = (-gamepad1.left_stick_y * .7);
                 bot.frontLeft.setPower(y - x - rx);
                 bot.backLeft.setPower(y + x - rx);
                 bot.frontRight.setPower(y + x + rx);
@@ -137,7 +147,7 @@ public class BlueLTTeleOp extends LinearOpMode {
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             } else {
-                rx = -gamepad2.right_stick_x * .967;
+                rx = -gamepad1.right_stick_x * .967;
                 bot.frontLeft.setPower(Math.pow((y - x - rx),3) / d);
                 bot.backLeft.setPower(Math.pow((y + x - rx),3) / d);
                 bot.frontRight.setPower(Math.pow((y + x + rx),3) / d);
@@ -163,22 +173,16 @@ public class BlueLTTeleOp extends LinearOpMode {
                 transferOn = false;
             }
             */
-            TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
-            //TelemetryUtil.addData("ty: ", bot.ll.getTy());
-            TelemetryUtil.addData("tx: ", bot.ll.getTx());
-            TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
-            //TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
-            //TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
-            if (panelsHoodAdjustment) {
-                new PositionHood(bot, hood, (1.01- hood)).schedule();
-            }
-
-            if (bot.ll.getGoalDistanceM() > 3 && bot.ll.getGoalDistanceM() < 5) {
+            if (bot.ll.getGoalDistanceM()  > 3 && bot.ll.getGoalDistanceM() < 5) {
                 bot.ll.setDegreeOffset(3);
             }
-            else {
-                bot.ll.setDegreeOffset(1);
-            }
+            TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
+            TelemetryUtil.addData("ty: ", bot.ll.getTy());
+            TelemetryUtil.addData("tx: ", bot.ll.getTx());
+            TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
+            TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
+            TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
+            //new PositionHood(bot, hood, (1.01- hood)).schedule();
             TelemetryUtil.addData("transfer on: ", transferOn);
 
             bot.loop();

@@ -15,11 +15,11 @@ public class   TheShooter extends SubsystemBase {
     public static double ki = 0;
     public static double kd = 0.0012;
     public static double kf = 0.001;
-    public static double newKp = 0.03;
+    public static double newKp = 0.005;
     public static double newKi = 0;
-    public static double newKd = 0.0012;
-    public static double newKf = 0.001;
-
+    public static double newKd = 0;
+    public static double newKs = 0.087;
+    public static double Kv = 0.00045;
     PIDFController epstein;
     public static double targetVelocity;
     private final ElapsedTime aimTimer = new ElapsedTime();
@@ -40,15 +40,17 @@ public class   TheShooter extends SubsystemBase {
             pidIntegral += error * timeDiff;
             pidIntegral = Range.clip(pidIntegral, -1, 1);
 
-            double derivative = (error - lastError) /timeDiff;
+            double derivative = (error - lastError) / timeDiff;
 
             lastError = error;
-
+            double feedforward = (newKs * Math.signum(error)) + (Kv * targetVelocity);
             double output = (error * newKp) + (newKi * pidIntegral) +
-                    (newKd * derivative) + (newKf * Math.signum(error));
+                    (newKd * derivative) + feedforward;
 
 
             output = Range.clip(output, -1, 1);
+
+            //sigma sigma boy sigma boy sigma boy
 
             return output;
     }
@@ -74,6 +76,7 @@ public class   TheShooter extends SubsystemBase {
 
     @Override
     public void periodic(){
+
         /*
         if(targetVelocity != 0) {
             epstein.setPIDF(kp, ki, kd, kf);
@@ -85,10 +88,7 @@ public class   TheShooter extends SubsystemBase {
             shooterRight.set(0);
         }
          */
-
-
         if(targetVelocity != 0) {
-            epstein.setPIDF(kp, ki, kd, kf);
             double power = calculate();
             shooterLeft.set(power);
             shooterRight.set(power);

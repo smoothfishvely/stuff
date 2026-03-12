@@ -140,7 +140,7 @@ public class FarBlueAuton extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .35, (1.01 - .35)),
+                        new PositionHood(bot, .32, (1.01 - .32)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
                         new PositionDoors(bot, false, true)
@@ -163,29 +163,33 @@ public class FarBlueAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.startToShoot),
-                                new ActivateShooter(bot, 1500),//on
+                                new ActivateShooter(bot, 1530),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new WaitCommand(900),
+                        new WaitCommand(1200),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.pickUpThirdSpike),
                         new FollowPathCommand(bot.follower, paths.ThirdSpikeToShoot),
+                        new WaitCommand(50),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.FirstCornerPickupPath),
                         new FollowPathCommand(bot.follower, paths.retryCorner),
                         new ActivateIntake(bot, false),
                         new FollowPathCommand(bot.follower, paths.CornerToShootPath),
                         new ActivateIntake(bot, true),
+                        new WaitCommand(50),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.FirstCornerPickupPath),
                         new ActivateIntake(bot, false),
                         new FollowPathCommand(bot.follower, paths.CornerToShootPath),
                         new ActivateIntake(bot, true),
+                        new WaitCommand(50),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.FirstCornerPickupPath),
                         new ActivateIntake(bot, false),
                         new FollowPathCommand(bot.follower, paths.CornerToShootPath),
                         new ActivateIntake(bot, true),
+                        new WaitCommand(50),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.FirstCornerPickupPath)
             /*

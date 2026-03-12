@@ -59,7 +59,7 @@ public class Bot {
     private double batteryVoltage = 0;
     private double nominalVoltage = 13.8;
     private double sigmaTransferPower = .63;
-    private static double sigmaFarTransferPower = .49;
+    private static double sigmaFarTransferPower = .56;
     private double adjustedTransferPower = 0;
     private double adjustedFarTransferPower = 0;
     Pose goon;
@@ -147,7 +147,7 @@ public class Bot {
             return 1120;
         }
         else if (ll.getGoalDistanceM() > 3){
-            return 1520;
+            return 1530;
         }
         else {
             return (193 * ll.getGoalDistanceM()) + 802;
@@ -155,7 +155,7 @@ public class Bot {
     }
     public double getHoodAngle() {
         if (ll.getGoalDistanceM() > 3 ) {
-            return .3;
+            return .32;
         }
         else {
             return (0.0836 * ll.getGoalDistanceM()) + 0.15;

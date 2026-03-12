@@ -158,7 +158,7 @@ public class EighteenBludAuton extends LinearOpMode {
                                     new Pose(16.532, 84.256),
                                     new Pose(54, 104.755)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(146))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(149))
 
                     .build();
         }
@@ -208,18 +208,18 @@ public class EighteenBludAuton extends LinearOpMode {
                         new FollowPathCommand(bot.follower, paths.Path5),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path6),
-                        new WaitCommand(1000),
+                        new WaitCommand(1600),
                         new FollowPathCommand(bot.follower, paths.Path7),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path8),
-                        new WaitCommand(1000),
+                        new WaitCommand(1800),
                         new FollowPathCommand(bot.follower, paths.Path9),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path10),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path11),
                                 new PositionHood(bot, .28, (1.01 - .28)),
-                                new ActivateShooter(bot, 1080)
+                                new ActivateShooter(bot, 1050)
                         ),
                         new Shoot(bot)
                 )
