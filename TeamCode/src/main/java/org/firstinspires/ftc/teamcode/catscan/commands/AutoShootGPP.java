@@ -9,26 +9,21 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 public class AutoShootGPP extends SequentialCommandGroup {
     public AutoShootGPP(Bot bot){
         addCommands(
-                //new ActivateKickerL(bot),//up
-                new WaitCommand(600),
-                new ParallelCommandGroup(
-                        //new ActivateKickerL(bot),//down
-                        //new ActivateKickerR(bot)//up
-                ),
-                new WaitCommand(600),
-                //new ActivateKickerR(bot),//down
+                new PositionSDLeft(bot, true),
+                new PositionSDRight(bot, false),
+                new WaitCommand(50),
+                new SetTransferPower(bot, bot.getAdjustedTransferPower() + .25),
+                new ActivateIntake(bot, true),
                 new WaitCommand(500),
-                new ParallelCommandGroup(
-                        //new ActivateKickerL(bot),//up (safety)
-                        //new ActivateKickerR(bot)//up
-                ),
-                new WaitCommand(600),
-                new ParallelCommandGroup(
-                        //new ActivateKickerL(bot),//down (safety)
-                        //new ActivateKickerR(bot),//down
-                        new ActivateShooter(bot)//off
-                )
+                new SetTransferPower(bot, 0),
+                new PositionSDLeft(bot, false),
+                new PositionSDRight(bot, true),
+                new SetTransferPower(bot, bot.getAdjustedTransferPower()),
+                new WaitCommand(1000),
+                new SetTransferPower(bot, .2),
+                new PositionSDLeft(bot, false),
+                new PositionSDRight(bot, false)
         );
-        addRequirements(bot.shooter);
+        addRequirements(bot.shooter, bot.theIntake, bot.theTransfer, bot.doors, bot.shooterDoors);
     }
 }

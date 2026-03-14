@@ -23,9 +23,14 @@ public class AutoConstants {
     public static double startHeadingRed = 45;
     public static double shootXCloseRed = 90;
     public static double shootYCloseRed = 88;
-    public static double shootHeadingRed = 45;
-    public static double gateIntakeXRed = 130;
-    public static double gateIntakeYRed = 61;
-    public static double gateIntakeHeadingRed = 28;
+    public static double shootHeadingRed = 46.5;
+    public static double gateIntakeXRed = 132.75;
+    public static double gateIntakeYRed = 62;
+    public static double gateIntakeHeadingRed = 26;
+    public static double startFarXRed = 87;
+    public static double startFarYRed = 8.8;
+    public static double shootFarXRed = 87;
+    public static double shootFarYRed = 15;
+    public static double shootFarHeadingRed = 67.5;
 
 }

@@ -3,10 +3,13 @@ import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateInt
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeXBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeYBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarHeadingBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarHeadingRed;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarXBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarXRed;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarYBlue;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startFarXBlue;
-import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startFarYBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootFarYRed;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startFarXRed;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startFarYRed;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
@@ -32,10 +35,9 @@ import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
-public class FarBlueAuton extends LinearOpMode {
-    public static Pose startPose = new Pose(startFarXBlue, startFarYBlue, Math.toRadians(90)); //fix
-    public static Pose shootPose = new Pose(shootFarXBlue, shootFarYBlue, Math.toRadians(shootFarHeadingBlue));
-    public static Pose gateIntake = new Pose(gateIntakeXBlue, gateIntakeYBlue, Math.toRadians(gateIntakeHeadingBlue));
+public class FarRedAuton extends LinearOpMode {
+    public static Pose startPose = new Pose(startFarXRed, startFarYRed, Math.toRadians(90)); //fix
+    public static Pose shootPose = new Pose(shootFarXRed, shootFarYRed, Math.toRadians(shootFarHeadingRed));
     Bot bot;
     public Paths paths;
 
@@ -57,18 +59,18 @@ public class FarBlueAuton extends LinearOpMode {
 
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(shootFarHeadingBlue))
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(shootFarHeadingRed))
 
                     .build();
 
             pickUpThirdSpike = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     shootPose,
-                                    new Pose(57.042, 48.645),
-                                    new Pose(64.758, 32.277),
-                                    new Pose(11.239, 35.587)
+                                    new Pose(88.042, 48.645),
+                                    new Pose(80.758, 32.277),
+                                    new Pose(133.239, 35.587)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootFarHeadingBlue), Math.toRadians(180), .4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootFarHeadingRed), Math.toRadians(0), .4)
 
                     .build();
 
@@ -76,11 +78,11 @@ public class FarBlueAuton extends LinearOpMode {
 
             ThirdSpikeToShoot = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(11.239, 35.587),
+                                    new Pose(133.239, 35.587),
 
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootFarHeadingBlue))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(shootFarHeadingRed))
 
                     .build();
             TurnToCornerPickup = follower.pathBuilder().addPath(
@@ -89,44 +91,44 @@ public class FarBlueAuton extends LinearOpMode {
 
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootFarHeadingBlue), Math.toRadians(200), .4)
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootFarHeadingRed), Math.toRadians(-20), .4)
 
                     .build();
             FirstCornerPickupPath = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     shootPose,
-                                    new Pose(59.7, 10),
-                                    new Pose(15, 11.5)
+                                    new Pose(85.7, 18),
+                                    new Pose(135, 13)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
             retryCorner = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose (15, 11.5),
-                                    new Pose (30, 25),
-                                    new Pose(14, 11.5)
+                                    new Pose (134, 11.5),
+                                    new Pose (114, 25),
+                                    new Pose(130, 11.5)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
 
             CornerToShootPath = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(15, 11.5),
-                                    new Pose(38, 21),
+                                    new Pose(135, 13),
+                                    new Pose(106, 21),
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootFarHeadingBlue))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(shootFarHeadingRed))
 
                     .build();
             SecondCornerPickupPath = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(19, 14),
+                                    new Pose(125, 14),
 
-                                    new Pose(16, 13)
+                                    new Pose(128, 13)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(200), Math.toRadians(180))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
 
                     .build();
         }

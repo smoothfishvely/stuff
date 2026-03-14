@@ -6,22 +6,22 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
-public class FarShoot extends SequentialCommandGroup {
-    public FarShoot(Bot bot){
+public class SlowShoot extends SequentialCommandGroup {
+    public SlowShoot(Bot bot){
         addCommands(
                 new PositionSDLeft(bot, true),
                 new PositionSDRight(bot, true),
                 new WaitCommand(50),
-                new SetTransferPower(bot, bot.getAdjustedFarTransferPower() + .1),
+                new SetTransferPower(bot, bot.getAdjustedTransferPower() + .1),
                 new ActivateIntake(bot, true),
                 new WaitCommand(50),
                 new SetTransferPower(bot, .2),
                 new WaitCommand(150),
-                new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
+                new SetTransferPower(bot, bot.getAdjustedTransferPower()),
                 new WaitCommand(80),
                 new SetTransferPower(bot, -.01),
                 new WaitCommand(120),
-                new SetTransferPower(bot, bot.getAdjustedFarTransferPower()+ .15),
+                new SetTransferPower(bot, bot.getAdjustedTransferPower()+ .15),
                 new WaitCommand(300),
                 new SetTransferPower(bot, .2),
                 new PositionSDLeft(bot, false),

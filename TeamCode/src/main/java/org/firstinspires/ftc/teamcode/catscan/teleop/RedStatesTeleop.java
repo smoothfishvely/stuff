@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.gamepad.GamepadEx;
@@ -19,21 +18,23 @@ import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.SetIntakePower;
 import org.firstinspires.ftc.teamcode.catscan.commands.SetTransferPower;
+import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.commands.ShooterPower;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Configurable
-@TeleOp(name = "4102 lt drive red")
+@TeleOp(name = "4102 STATES red")
 
-public class RedLTTeleop extends LinearOpMode {
+public class RedStatesTeleop extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
-    boolean transferOn, intOn;
+    boolean transferOn, intOn, sortOn;
     private static double hood = 0;
     private static double testTransferPower = 0;
     private static int waitms =0;
+    private double fwdIntPow;
     Bot bot;
     @Override
     public void runOpMode() throws InterruptedException {
@@ -74,36 +75,35 @@ public class RedLTTeleop extends LinearOpMode {
         gp1.getGamepadButton(GamepadKeys.Button.X).whenPressed(()->{
             new SequentialCommandGroup(
                     new SetIntakePower(bot, -1),
-                    new WaitCommand(200),
-                    new SetIntakePower(bot, 1)
+                    new WaitCommand(100),
+                    new SetIntakePower(bot,1)
             ).schedule();
         });
 
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
-            transferOn = !transferOn;
-            if(!transferOn){
-                new SequentialCommandGroup(
-                        new PositionSDLeft(bot, false),
-                        new PositionSDRight(bot, false),
-                        new SetTransferPower(bot, .3)
-                ).schedule();
-                bot.beamBreaks.setFalse();
-            } else if (bot.ll.getGoalDistanceM() > 3 ){
-                new SequentialCommandGroup(
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
-                        new WaitCommand(waitms),
-                        new PositionSDLeft(bot, true),
-                        new PositionSDRight(bot, true),
-                        new ActivateIntake(bot, true)
-                ).schedule();
-            }
-            else {
+            if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
+                        new WaitCommand(50),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower() + .1),
                         new ActivateIntake(bot, true),
-                        new WaitCommand(75),
-                        new SetTransferPower(bot, bot.getAdjustedTransferPower())
+                        new WaitCommand(50),
+                        new SetTransferPower(bot, .2),
+                        new WaitCommand(150),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
+                        new WaitCommand(80),
+                        new SetTransferPower(bot, -.01),
+                        new WaitCommand(120),
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()+ .15),
+                        new WaitCommand(200),
+                        new SetTransferPower(bot, .2),
+                        new PositionSDLeft(bot, false),
+                        new PositionSDRight(bot, false)
+                ).schedule();
+            } else {
+                new SequentialCommandGroup(
+                        new Shoot(bot)
                 ).schedule();
             }
         });
@@ -117,7 +117,19 @@ public class RedLTTeleop extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
-
+        gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
+            sortOn = !sortOn;
+            if (sortOn) {
+                fwdIntPow = .6;
+                bot.doors.setSortOn(true);
+                new SetIntakePower(bot, fwdIntPow).schedule();
+            }
+            else {
+                fwdIntPow = 1;
+                bot.doors.setSortOn(false);
+                new SetIntakePower(bot, fwdIntPow).schedule();
+            }
+        });
 
         waitForStart();
         new PositionDoors(bot, false, true).schedule();
@@ -145,14 +157,23 @@ public class RedLTTeleop extends LinearOpMode {
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             } else {
                 rx = -gamepad2.right_stick_x * .967;
-                bot.frontLeft.setPower(Math.pow((y - x - rx),3) / d);
-                bot.backLeft.setPower(Math.pow((y + x - rx),3) / d);
-                bot.frontRight.setPower(Math.pow((y + x + rx),3) / d);
-                bot.backRight.setPower(Math.pow((y - x + rx),3) / d);
+                bot.frontLeft.setPower(Math.pow((y - x - rx),1) / d);
+                bot.backLeft.setPower(Math.pow((y + x - rx),1) / d);
+                bot.frontRight.setPower(Math.pow((y + x + rx),1) / d);
+                bot.backRight.setPower(Math.pow((y - x + rx),1) / d);
                 bot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            }
+
+            if (gamepad2.aWasPressed()) {
+                bot.kickLeft.setPosition(.1);
+                bot.kickRight.setPosition(.9);
+            }
+            if (gamepad2.bWasPressed()) {
+                bot.kickLeft.setPosition(.75);
+                bot.kickRight.setPosition(.25);
             }
             /*
             if(bot.beamBreaks.getNumBalls() == 3 && !transferOn){
@@ -170,13 +191,19 @@ public class RedLTTeleop extends LinearOpMode {
                 transferOn = false;
             }
             */
+            if (bot.ll.getGoalDistanceM() > 3 && bot.ll.getGoalDistanceM() < 5) {
+                bot.ll.setDegreeOffset(-4);
+            }
+            else {
+                bot.ll.setDegreeOffset(1);
+            }
 
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
-            TelemetryUtil.addData("ty: ", bot.ll.getTy());
+            //TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
-            TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
-            TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
+            //TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
+            //TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
 
             bot.loop();
         }

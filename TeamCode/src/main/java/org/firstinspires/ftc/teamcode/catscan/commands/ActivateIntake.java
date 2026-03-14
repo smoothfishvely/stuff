@@ -9,6 +9,4 @@ public class ActivateIntake extends InstantCommand {
     public ActivateIntake(Bot bot, boolean on){
         bot.theIntake.setOn(on);
     }
-
-
 }

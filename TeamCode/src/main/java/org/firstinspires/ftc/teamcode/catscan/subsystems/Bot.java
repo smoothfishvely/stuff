@@ -14,6 +14,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -51,7 +52,7 @@ public class Bot {
     public BeamBreaks beamBreaks;
     public TheLights lights;
     public VoltageSensor battery;
-    public NormalizedColorSensor colorSensor;
+    public NormalizedColorSensor colorSensorR;
     private double power;
     PIDFController aimPIDF;
     private double hoodCorrection;
@@ -62,6 +63,7 @@ public class Bot {
     private static double sigmaFarTransferPower = .56;
     private double adjustedTransferPower = 0;
     private double adjustedFarTransferPower = 0;
+    private boolean shooting;
     Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
@@ -71,7 +73,7 @@ public class Bot {
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
         tm = PanelsTelemetry.INSTANCE.getTelemetry();
 
-//        colorSensor = hMap.get(NormalizedColorSensor.class, "colorSensor");
+        colorSensorR = hMap.get(NormalizedColorSensor.class, "colorSensorR");
         shootDoorLeft = hMap.get(Servo.class, "shootDoorLeft");
         aimPIDF = new PIDFController(aimKp,aimKI,aimKd,aimKf);
         shootDoorRight = hMap.get(Servo.class, "shootDoorRight");
@@ -95,6 +97,8 @@ public class Bot {
         rightLED = hMap.get(Servo.class, "rightLED");
         midLED = hMap.get(Servo.class, "midLED");
         leftLED = hMap.get(Servo.class, "leftLED");
+        kickLeft = hMap.get(Servo.class, "kickLeft");
+        kickRight = hMap.get(Servo.class, "kickRight");
 
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
@@ -104,7 +108,7 @@ public class Bot {
         rightMidBB.setMode(DigitalChannel.Mode.INPUT);
         leftTopBB.setMode(DigitalChannel.Mode.INPUT);
         bottomBB.setMode(DigitalChannel.Mode.INPUT);
-         //beam break stuff
+        //beam break stuff
         shooterLeft.setInverted(true);
         intake = hMap.get(DcMotorEx.class,"intake");
         intake.setDirection(DcMotor.Direction.REVERSE);
@@ -117,7 +121,7 @@ public class Bot {
         goon = follower.getPose();
         theTransfer = new TheTransfer(transfer);
         shooterDoors = new ShooterDoors(shootDoorLeft, shootDoorRight);
-        doors = new TheDoors(sortLeft, sortRight);
+        doors = new TheDoors(sortLeft, sortRight, colorSensorR);
         hood = new TheHood(hoodLeft, hoodRight);
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
@@ -130,9 +134,9 @@ public class Bot {
         batteryVoltage = battery.getVoltage();
 
         limelight.start();
-//        if (colorSensor instanceof SwitchableLight) {
-//            ((SwitchableLight)colorSensor).enableLight(true);
-//        }
+        if (colorSensorR instanceof SwitchableLight) {
+            ((SwitchableLight)colorSensorR).enableLight(true);
+        }
     }
 
     public void setMotif(int m){
@@ -147,7 +151,7 @@ public class Bot {
             return 1120;
         }
         else if (ll.getGoalDistanceM() > 3){
-            return 1530;
+            return 1540;
         }
         else {
             return (193 * ll.getGoalDistanceM()) + 802;
@@ -202,6 +206,14 @@ public class Bot {
 
     public double getAdjustedFarTransferPower() {
         return adjustedFarTransferPower;
+    }
+
+    public void setShootOn(boolean on){
+        shooting = on;
+    }
+
+    public boolean getShootOn(){
+        return shooting;
     }
 
     public void loop(){

@@ -183,10 +183,10 @@ public class EighteenRedAuton extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .3, (1.01 - .3)),
+                        new PositionHood(bot, .28, (1.01 - .28)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
-                        new PositionDoors(bot, true, false)
+                        new PositionDoors(bot, false, true)
                 )
         );
         while(opModeInInit()){
@@ -206,7 +206,7 @@ public class EighteenRedAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path1),
-                                new ActivateShooter(bot, 1120),//on
+                                new ActivateShooter(bot, 1100),//on
                                 new ActivateIntake(bot, true)
                         ),
                         new Shoot(bot),
@@ -214,22 +214,22 @@ public class EighteenRedAuton extends LinearOpMode {
                         new FollowPathCommand(bot.follower, paths.Path3),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path4),
-                        new WaitCommand(1000),
+                        new WaitCommand(1500),
                         new FollowPathCommand(bot.follower, paths.Path5),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path6),
-                        new WaitCommand(1000),
+                        new WaitCommand(1900),
                         new FollowPathCommand(bot.follower, paths.Path7),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path8),
-                        new WaitCommand(1000),
+                        new WaitCommand(1800),
                         new FollowPathCommand(bot.follower, paths.Path9),
                         new Shoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path10),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path11),
                                 new PositionHood(bot, .28, (1.01 - .28)),
-                                new ActivateShooter(bot, 1080)
+                                new ActivateShooter(bot, 1050)
                         ),
                         new Shoot(bot)
                 )

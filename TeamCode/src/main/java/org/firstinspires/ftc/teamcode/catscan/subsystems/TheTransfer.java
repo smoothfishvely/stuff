@@ -13,6 +13,9 @@ public class TheTransfer extends SubsystemBase {
     public void setPower(double power){
         transfer.setPower(power);
     }
+    public double getPower(){
+        return transfer.getPower();
+    }
     public void setOn(boolean on){
         if(on){
             transfer.setPower(.53);
