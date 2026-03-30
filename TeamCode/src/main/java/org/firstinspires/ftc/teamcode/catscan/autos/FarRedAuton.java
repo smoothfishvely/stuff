@@ -166,10 +166,10 @@ public class FarRedAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.startToShoot),
-                                new ActivateShooter(bot, 1530),//on
+                                new ActivateShooter(bot, 1590),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new WaitCommand(900),
+                        new WaitCommand(1300),
                         new FarShoot(bot),
                         new FollowPathCommand(bot.follower, paths.pickUpThirdSpike),
                         new FollowPathCommand(bot.follower, paths.ThirdSpikeToShoot),
@@ -209,7 +209,7 @@ public class FarRedAuton extends LinearOpMode {
                         ),
                         new WaitCommand(70),
                         new FarShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.FirstCornerPickupPath)
+                        new FollowPathCommand(bot.follower, paths.pickUpThirdSpike)
                 )
         );
     }

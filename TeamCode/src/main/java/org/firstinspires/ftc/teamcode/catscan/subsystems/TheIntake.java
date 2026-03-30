@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit.AMPS;
+
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
@@ -15,6 +17,9 @@ public class TheIntake extends SubsystemBase {
     }
     public void setPower(double power){
         intake.setPower(power);
+    }
+    public double getCurrent() {
+        return intake.getCurrent(AMPS);
     }
 
     public void setOn(boolean on){

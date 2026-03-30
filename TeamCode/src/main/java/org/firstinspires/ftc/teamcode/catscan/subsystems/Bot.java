@@ -7,6 +7,7 @@ import com.pedropathing.follower.Follower;
 import com.pedropathing.ftc.FTCCoordinates;
 import com.pedropathing.geometry.PedroCoordinates;
 import com.pedropathing.geometry.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -17,17 +18,24 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
+import org.firstinspires.ftc.teamcode.catscan.pipelines.PurpleOrGreen;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 @Configurable
 public class Bot {
@@ -36,7 +44,7 @@ public class Bot {
     public Servo sortLeft, sortRight, kickLeft, kickRight, hoodLeft, hoodRight, shootDoorLeft, shootDoorRight, rightLED, midLED, leftLED;
     public MotorEx shooterLeft, shooterRight;
     public TheHood hood;
-    public DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
+    public DigitalChannel rightTopBB, rightMidBB, bottomBB, intakeBB;
     private static double aimKp = .1; //tune pids
     private static double aimKI = 0;
     private static double aimKd = 0;
@@ -59,16 +67,20 @@ public class Bot {
     private double shooterError = 0;
     private double batteryVoltage = 0;
     private double nominalVoltage = 13.8;
-    private double sigmaTransferPower = .63;
-    private static double sigmaFarTransferPower = .56;
+    private double sigmaTransferPower = .8;
+    private static double sigmaFarTransferPower = .45;
     private double adjustedTransferPower = 0;
     private double adjustedFarTransferPower = 0;
-    private boolean shooting;
+    private boolean shooting, sortOn = true;
+    final int cameraWidth = 1280;
+    final int cameraHeight = 720;
+    Vector velocity = new Vector();
     Pose goon;
     ElapsedTime gateTimer = new ElapsedTime(); // The timer that tracks how long it has been since a gate was opened
     float gateWaitTime = 1; // The time, in seconds, that the gate waits before closing
     public boolean teleOp;
-    public boolean isBlue; //added this to use to determine target goal position, see getTargetAngle()
+    PurpleOrGreen diddy = new PurpleOrGreen();
+    OpenCvWebcam webcam;
     private int motif;
     public Bot(HardwareMap hMap, Pose startPose, boolean teleOp){
         tm = PanelsTelemetry.INSTANCE.getTelemetry();
@@ -102,11 +114,11 @@ public class Bot {
 
         rightTopBB = hMap.get(DigitalChannel.class, "rightTopBB");
         rightMidBB = hMap.get(DigitalChannel.class, "rightMidBB");
-        leftTopBB = hMap.get(DigitalChannel.class, "leftTopBB");
+        intakeBB = hMap.get(DigitalChannel.class, "intakeBB");
         bottomBB = hMap.get(DigitalChannel.class, "bottomBB");
         rightTopBB.setMode(DigitalChannel.Mode.INPUT);
         rightMidBB.setMode(DigitalChannel.Mode.INPUT);
-        leftTopBB.setMode(DigitalChannel.Mode.INPUT);
+        intakeBB.setMode(DigitalChannel.Mode.INPUT);
         bottomBB.setMode(DigitalChannel.Mode.INPUT);
         //beam break stuff
         shooterLeft.setInverted(true);
@@ -126,7 +138,7 @@ public class Bot {
         theIntake = new TheIntake(intake);
         shooter = new TheShooter(shooterLeft, shooterRight);
         ll = new TheLimelight(limelight);
-        beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, leftTopBB, bottomBB);
+        beamBreaks = new BeamBreaks(rightTopBB, rightMidBB, intakeBB, bottomBB);
         lights = new TheLights(rightLED, midLED, leftLED);
         CommandScheduler.getInstance().registerSubsystem(hood, theIntake, shooter, theTransfer, shooterDoors);
 
@@ -137,6 +149,27 @@ public class Bot {
         if (colorSensorR instanceof SwitchableLight) {
             ((SwitchableLight)colorSensorR).enableLight(true);
         }
+
+
+        int cameraMonitorViewId = hMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam.setPipeline(diddy);
+
+
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(cameraWidth, cameraHeight, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+            }
+
+
+            @Override
+            public void onError(int errorCode) {
+
+
+            }
+        });
     }
 
     public void setMotif(int m){
@@ -165,21 +198,26 @@ public class Bot {
             return (0.0836 * ll.getGoalDistanceM()) + 0.15;
         }
     }
-    public double getTargetAngle(){//made this get target angle so it can be used for the .turnTo version in teleOp
-        if (isBlue) {
-            double x = goon.getX();
-            double y = 144 - goon.getY(); //blue goal position is at x = 0, y = 144 in pedro coordinates
-            return Math.atan(x / y);
-        }
-        else {
-            double x = 144 - goon.getX(); //red goal position is at x = 144, y = 144 in pedro coordinates
-            double y = 144 - goon.getY();
-            return Math.atan(x / y);
-        }
-    }
 
     public void setPose(Pose pose){ //maybe use for manual relocalize but idk how necessary (just wanted to lol)
         follower.setPose(pose);
+    }
+
+    public void sortOff() {
+        webcam.stopStreaming();
+        sortOn = false;
+
+    }
+    public void sortOn() {
+        webcam.startStreaming(cameraWidth, cameraHeight, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+        sortOn = true;
+    }
+
+    public boolean hasPurpleBall() {
+        return diddy.hasPurpleBall();
+    }
+    public boolean hasGreenBall() {
+        return diddy.hasGreenBall();
     }
 
     public void llRelocalize(){ //gets botPose from ll, converts to pedro coordinate system, and sets pose to the result
@@ -223,12 +261,25 @@ public class Bot {
         adjustedFarTransferPower = sigmaFarTransferPower * (nominalVoltage / Math.max(batteryVoltage, 1.0));
         shooterError = Math.abs(getRizz() - shooter.getVelocity());
         CommandScheduler.getInstance().run();
-//        TelemetryUtil.addData("transfer Power: ", getAdjustedTransferPower());
+//      TelemetryUtil.addData("transfer Power: ", getAdjustedTransferPower());
         TelemetryUtil.addData("Velocity: ", shooterRight.getVelocity());
         TelemetryUtil.addData("target velocity: ", shooter.getTargetVelocity());
-        TelemetryUtil.addData("motif", motif);
+
+        if (sortOn) {
+            TelemetryUtil.addData("Green Data", diddy.debuggingGreen());
+            TelemetryUtil.addData("Purple Data", diddy.debuggingPurple());
+        }
+
+        //TelemetryUtil.addData("motif", motif);
+        //TelemetryUtil.addData("sort on? ", sortOn);
+
         TelemetryUtil.update();
         follower.update();
+
+        velocity = follower.getVelocity();
+        velocity.rotateVector(-follower.getHeading());
+
+        ll.updateVelocities(((velocity.getXComponent() * 2.54) / 100.0), ((velocity.getYComponent() * 2.54) / 100.0));
 
         if (!isErrorSig()) {
             if (beamBreaks.getNumBalls() == 3) {
@@ -252,9 +303,10 @@ public class Bot {
                 lights.setIndividualPower(0, 0, 0);
             }
         }
+
         tm.debug("right top:", beamBreaks.rightTop);
         tm.debug("right mid:", beamBreaks.rightMid);
-        tm.debug("left top:", beamBreaks.leftTop);
+        tm.debug("left top:", beamBreaks.intake);
         tm.debug("bottom:", beamBreaks.bottom);
 
 

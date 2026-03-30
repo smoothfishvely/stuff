@@ -90,18 +90,9 @@ public class BlueStatesTeleOp extends LinearOpMode {
                 new SequentialCommandGroup(
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
-                        new WaitCommand(50),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower() + .1),
-                        new SetIntakePower(bot, fwdIntPow),
-                        new WaitCommand(50),
-                        new SetTransferPower(bot, .2),
-                        new WaitCommand(150),
+                        new WaitCommand(40),
                         new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
-                        new WaitCommand(80),
-                        new SetTransferPower(bot, -.01),
-                        new WaitCommand(120),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()+ .15),
-                        new WaitCommand(200),
+                        new WaitCommand(600),
                         new SetTransferPower(bot, .2),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false)
@@ -129,6 +120,7 @@ public class BlueStatesTeleOp extends LinearOpMode {
             bot.hood.down();
             bot.hood.setPos();
         });
+        /*
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
             sortOn = !sortOn;
             if (sortOn) {
@@ -142,6 +134,8 @@ public class BlueStatesTeleOp extends LinearOpMode {
                 new SetIntakePower(bot, fwdIntPow).schedule();
             }
         });
+        */
+
         gp2.getGamepadButton(GamepadKeys.Button.DPAD_DOWN).whenPressed(()->{
             new SequentialCommandGroup(
             new AutoShootPPG(bot)
@@ -151,6 +145,14 @@ public class BlueStatesTeleOp extends LinearOpMode {
             new SequentialCommandGroup(
                     new AutoShootGPP(bot)
             ).schedule();
+        });
+        gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
+            bot.sortOff();
+            sortOn = false;
+        });
+        gp2.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
+            bot.sortOn();
+            sortOn = true;
         });
         waitForStart();
         new PositionDoors(bot, false , true).schedule();
@@ -216,6 +218,8 @@ public class BlueStatesTeleOp extends LinearOpMode {
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             //TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
             //TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
+
+
             if (panelsHoodAdjustment) {
                 new PositionHood(bot, hood, (1.01- hood)).schedule();
             }
@@ -226,7 +230,24 @@ public class BlueStatesTeleOp extends LinearOpMode {
             else {
                 bot.ll.setDegreeOffset(1);
             }
-            TelemetryUtil.addData("transfer on: ", transferOn);
+
+            if (sortOn) {
+                if (bot.hasPurpleBall()) {
+                    new SequentialCommandGroup(
+                            new PositionDoors(bot, false, true),
+                            new WaitCommand(400)
+                    ).schedule();
+                }
+                else if (bot.hasGreenBall()) {
+                    new SequentialCommandGroup(
+                            new PositionDoors(bot, true, false),
+                            new WaitCommand(400)
+                    ).schedule();
+                }
+            }
+
+            TelemetryUtil.addData("Sort on? ", sortOn);
+            //TelemetryUtil.addData("transfer on: ", transferOn);
 
             bot.loop();
         }

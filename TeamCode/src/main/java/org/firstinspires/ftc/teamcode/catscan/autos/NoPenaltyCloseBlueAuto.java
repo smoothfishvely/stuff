@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.catscan.autos;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeHeadingBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeXBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.gateIntakeYBlue;
+import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.penGateIntakeYBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootHeadingBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootCloseXBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootYCloseBlue;
@@ -29,14 +30,14 @@ import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
-import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
-public class EighteenBludAuton extends LinearOpMode {
+public class NoPenaltyCloseBlueAuto extends LinearOpMode {
     public static Pose startPose = new Pose(startCloseXBlue, startCloseYBlue, Math.toRadians(startHeadingBlue)); //fix
     public static Pose shootPose = new Pose(shootCloseXBlue, shootYCloseBlue, Math.toRadians(shootHeadingBlue));
     public static Pose gateIntake = new Pose(gateIntakeXBlue, gateIntakeYBlue, Math.toRadians(gateIntakeHeadingBlue));
+    public static Pose penGateIntake = new Pose(gateIntakeXBlue, penGateIntakeYBlue, gateIntakeHeadingBlue);
     Bot bot;
     public Paths paths;
 
@@ -52,6 +53,7 @@ public class EighteenBludAuton extends LinearOpMode {
         public PathChain Path9;
         public PathChain Path10;
         public PathChain Path11;
+        public PathChain penGate;
 
         public Paths(Follower follower) {
             Path1 = follower.pathBuilder().addPath(
@@ -163,6 +165,14 @@ public class EighteenBludAuton extends LinearOpMode {
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(149))
 
                     .build();
+            penGate = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    gateIntake,
+                                    penGateIntake
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingBlue), Math.toRadians(gateIntakeHeadingBlue))
+
+                    .build();
         }
     }
 
@@ -205,28 +215,34 @@ public class EighteenBludAuton extends LinearOpMode {
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path2),
                                 new ReverseIntake(bot)
-                                ),
+                        ),
                         new FollowPathCommand(bot.follower, paths.Path3),
                         new AutonShoot(bot),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path4),
                                 new ReverseIntake(bot)
                         ),
-                        new WaitCommand(1200),
+                        new WaitCommand(300),
+                        new FollowPathCommand(bot.follower, paths.penGate),
+                        new WaitCommand(700),
                         new FollowPathCommand(bot.follower, paths.Path5),
                         new AutonShoot(bot),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path6),
                                 new ReverseIntake(bot)
                         ),
-                        new WaitCommand(1600),
+                        new WaitCommand(300),
+                        new FollowPathCommand(bot.follower, paths.penGate),
+                        new WaitCommand(900),
                         new FollowPathCommand(bot.follower, paths.Path7),
                         new AutonShoot(bot),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path8),
                                 new ReverseIntake(bot)
                         ),
-                        new WaitCommand(1600),
+                        new WaitCommand(300),
+                        new FollowPathCommand(bot.follower, paths.penGate),
+                        new WaitCommand(900),
                         new FollowPathCommand(bot.follower, paths.Path9),
                         new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path10),

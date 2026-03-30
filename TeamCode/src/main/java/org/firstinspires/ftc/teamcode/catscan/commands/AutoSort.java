@@ -27,6 +27,7 @@ public class AutoSort extends CommandBase {
                     new ActivateIntake(bot, true),
                     new WaitCommand(500),
                     new SetTransferPower(bot, 0),
+                    new WaitCommand(300),
                     new PositionSDLeft(bot, false),
                     new PositionSDRight(bot, true),
                     new SetTransferPower(bot, bot.getAdjustedTransferPower()),

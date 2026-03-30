@@ -43,6 +43,8 @@ public class TheLimelight extends SubsystemBase {
     private final ElapsedTime aimTimer = new ElapsedTime();
     double timeDiff;
     private double error = 0;
+
+    private double xVel, yVel, perpedicularVel, txRad;
     public TheLimelight(Limelight3A limelight){
         this.limelight = limelight;
         result = limelight.getLatestResult();
@@ -55,6 +57,14 @@ public class TheLimelight extends SubsystemBase {
     public double getTy() {return ty;}
 
     public double getTx() {return tx;}
+
+    public void updateVelocities(double xVel, double yVel) {
+        this.xVel = xVel;
+        this.yVel = yVel;
+        this.txRad = Math.toRadians(tx);
+
+        this.perpedicularVel = (xVel * Math.cos(txRad)) - (yVel * Math.sin(txRad));
+    }
 
     public double AimPID() {
             error = tx - degreeOffset;
@@ -72,8 +82,35 @@ public class TheLimelight extends SubsystemBase {
 
             double output = kp * error + (ki * aimIntegral)
                     + (kd * aimDerivative) + (kf * Math.signum(error));
+
             output = Range.clip(output, -1, 1);// limits within -1, 1
+
             return output;
+    }
+
+    public double sotmPID() {
+        double leadAngle = Math.toDegrees(Math.atan((perpedicularVel *
+                Math.sqrt((2 * ((1.192 * getGoalDistanceM()) - .85)) / 9.46)) / getGoalDistanceM()));
+
+        error = tx - (degreeOffset + leadAngle);
+
+        aimIntegral += error * timeDiff;
+
+        double aimDerivative = (error - aimLastError) / timeDiff;
+        aimLastError = error;
+
+        //checks for tolerance
+        if (Math.abs(error) < aimTolerance) {
+            aimIntegral = 0;
+            return 0;
+        }
+
+        double output = kp * error + (ki * aimIntegral)
+                + (kd * aimDerivative) + (kf * Math.signum(error));
+
+        output = Range.clip(output, -1, 1);// limits within -1, 1
+
+        return output;
     }
 
     public void setPipeline(int p){
@@ -87,9 +124,8 @@ public class TheLimelight extends SubsystemBase {
         return ((targetHeight) / (Math.tan(Math.toRadians(ty)))) + .1;
     }
 
-    public double getAimPower() {
-        power = Range.clip(power, -1, 1); // maxes power at -1 and 1
-        return power;
+    public boolean isResultValid() {
+        return (ty > 0.01);
     }
     public Pose3D getBotPose() {
         return pose;

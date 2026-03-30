@@ -1,31 +1,29 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
-import com.bylazar.telemetry.PanelsTelemetry;
-import com.bylazar.telemetry.TelemetryManager;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
 
 public class BeamBreaks extends SubsystemBase {
-    private DigitalChannel rightTopBB, rightMidBB, leftTopBB, bottomBB;
+    private DigitalChannel rightTopBB, rightMidBB, intakeBB, bottomBB;
     private int numBalls;
     public boolean rightTop = false;
     public boolean rightMid = false;
-    public boolean leftTop = false;
+    public boolean intake = false;
     public boolean bottom = false;
 
 
 
     public boolean realRightTop, realRightMid, realLeftTop, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
-                       DigitalChannel leftTopBB, DigitalChannel bottomBB) {
+                       DigitalChannel intakeBB, DigitalChannel bottomBB) {
 
         this.rightTopBB = rightTopBB;
         this.rightMidBB = rightMidBB;
-        this.leftTopBB = leftTopBB;
+        this.intakeBB = intakeBB;
         this.bottomBB = bottomBB;
         this.rightTopBB.setMode(DigitalChannel.Mode.INPUT);
         this.rightMidBB.setMode(DigitalChannel.Mode.INPUT);
-        this.leftTopBB.setMode(DigitalChannel.Mode.INPUT);
+        this.intakeBB.setMode(DigitalChannel.Mode.INPUT);
         this.bottomBB.setMode(DigitalChannel.Mode.INPUT);
     }
 
@@ -53,7 +51,7 @@ public class BeamBreaks extends SubsystemBase {
 
         rightTop = rightTopBB.getState();
         rightMid = rightMidBB.getState();
-        leftTop = leftTopBB.getState();
+        intake = intakeBB.getState();
         bottom = bottomBB.getState();
 
         if (rightTop) {
@@ -73,7 +71,7 @@ public class BeamBreaks extends SubsystemBase {
 
         TelemetryUtil.addData("right top:", rightTop);
         TelemetryUtil.addData("right mid:", rightMid);
-        TelemetryUtil.addData("left top:", leftTop);
+        TelemetryUtil.addData("left top:", intake);
         TelemetryUtil.addData("bottom:", bottom);
     }
 }

@@ -12,9 +12,9 @@ public class Shoot extends SequentialCommandGroup {
                 new PositionSDLeft(bot, true),
                 new PositionSDRight(bot, true),
                 new ActivateIntake(bot, true),
-                new WaitCommand(75),
+                new WaitCommand(40),
                 new SetTransferPower(bot, bot.getAdjustedTransferPower()),
-                new WaitCommand(500),
+                new WaitCommand(800),
                 new SetTransferPower(bot, .2),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, false)

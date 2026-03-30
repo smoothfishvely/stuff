@@ -33,10 +33,12 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
+import org.firstinspires.ftc.teamcode.catscan.commands.AutonShoot;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
+import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
@@ -209,29 +211,47 @@ public class EighteenRedAuton extends LinearOpMode {
                                 new ActivateShooter(bot, 1100),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new Shoot(bot),
+                        new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path2),
                         new FollowPathCommand(bot.follower, paths.Path3),
-                        new Shoot(bot),
+                        new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path4),
-                        new WaitCommand(1500),
-                        new FollowPathCommand(bot.follower, paths.Path5),
-                        new Shoot(bot),
+                        new WaitCommand(1100),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(bot.follower, paths.Path5),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new ReverseIntake(bot)
+                                )
+                        ),
+                        new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path6),
-                        new WaitCommand(1900),
-                        new FollowPathCommand(bot.follower, paths.Path7),
-                        new Shoot(bot),
+                        new WaitCommand(1300),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(bot.follower, paths.Path7),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new ReverseIntake(bot)
+                                )
+                        ),
+                        new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path8),
-                        new WaitCommand(1800),
-                        new FollowPathCommand(bot.follower, paths.Path9),
-                        new Shoot(bot),
+                        new WaitCommand(1300),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(bot.follower, paths.Path9),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(300),
+                                        new ReverseIntake(bot)
+                                )
+                        ),
+                        new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path10),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path11),
                                 new PositionHood(bot, .28, (1.01 - .28)),
                                 new ActivateShooter(bot, 1050)
                         ),
-                        new Shoot(bot)
+                        new AutonShoot(bot)
                 )
         );
     }

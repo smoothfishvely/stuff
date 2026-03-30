@@ -12,6 +12,7 @@ import com.seattlesolvers.solverslib.gamepad.GamepadEx;
 import com.seattlesolvers.solverslib.gamepad.GamepadKeys;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
+import org.firstinspires.ftc.teamcode.catscan.commands.FarShoot;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
@@ -83,23 +84,7 @@ public class RedStatesTeleop extends LinearOpMode {
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
             if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
-                        new PositionSDLeft(bot, true),
-                        new PositionSDRight(bot, true),
-                        new WaitCommand(50),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower() + .1),
-                        new ActivateIntake(bot, true),
-                        new WaitCommand(50),
-                        new SetTransferPower(bot, .2),
-                        new WaitCommand(150),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
-                        new WaitCommand(80),
-                        new SetTransferPower(bot, -.01),
-                        new WaitCommand(120),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()+ .15),
-                        new WaitCommand(200),
-                        new SetTransferPower(bot, .2),
-                        new PositionSDLeft(bot, false),
-                        new PositionSDRight(bot, false)
+                        new FarShoot(bot)
                 ).schedule();
             } else {
                 new SequentialCommandGroup(
