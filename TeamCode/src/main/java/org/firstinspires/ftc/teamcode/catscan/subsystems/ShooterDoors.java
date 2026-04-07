@@ -15,17 +15,17 @@ public class ShooterDoors extends SubsystemBase {
 
     public void shootLeft(boolean shootL){
         if (!shootL) {
-            shootDoorLeft.setPosition(.05);
+            shootDoorLeft.setPosition(.2);
         } else {
-            shootDoorLeft.setPosition(.3);
+            shootDoorLeft.setPosition(.34);
         }
-        TelemetryUtil.addData("Hsoidfhiosdhfosdif ", shootL);
+        //TelemetryUtil.addData("Hsoidfhiosdhfosdif ", shootL);
     }
     public void shootRight(boolean shootR){
         if (!shootR) {
-            shootDoorRight.setPosition(.05);
+            shootDoorRight.setPosition(.28);
         } else {
-            shootDoorRight.setPosition(.3);
+            shootDoorRight.setPosition(.47);
         }
     }
 }

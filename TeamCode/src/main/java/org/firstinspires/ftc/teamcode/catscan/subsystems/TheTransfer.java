@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit.AMPS;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
@@ -16,6 +18,11 @@ public class TheTransfer extends SubsystemBase {
     public double getPower(){
         return transfer.getPower();
     }
+
+    public double getCurrent() {
+        return transfer.getCurrent(AMPS);
+    }
+
     public void setOn(boolean on){
         if(on){
             transfer.setPower(.53);

@@ -69,9 +69,9 @@ public class BeamBreaks extends SubsystemBase {
         if (rightMid) numBalls++;
         if (bottom) numBalls++;
 
-        TelemetryUtil.addData("right top:", rightTop);
-        TelemetryUtil.addData("right mid:", rightMid);
-        TelemetryUtil.addData("left top:", intake);
-        TelemetryUtil.addData("bottom:", bottom);
+        //TelemetryUtil.addData("right top:", rightTop);
+        //TelemetryUtil.addData("right mid:", rightMid);
+        //TelemetryUtil.addData("left top:", intake);
+        //TelemetryUtil.addData("bottom:", bottom);
     }
 }

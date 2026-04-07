@@ -21,6 +21,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.seattlesolvers.solverslib.command.CommandScheduler;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.hardware.motors.Motor;
 import com.seattlesolvers.solverslib.hardware.motors.MotorEx;
@@ -67,11 +68,11 @@ public class Bot {
     private double shooterError = 0;
     private double batteryVoltage = 0;
     private double nominalVoltage = 13.8;
-    private double sigmaTransferPower = .8;
+    private double sigmaTransferPower = .9;
     private static double sigmaFarTransferPower = .45;
     private double adjustedTransferPower = 0;
     private double adjustedFarTransferPower = 0;
-    private boolean shooting, sortOn = true;
+    private boolean shooting, sortOn = false;
     final int cameraWidth = 1280;
     final int cameraHeight = 720;
     Vector velocity = new Vector();
@@ -195,7 +196,7 @@ public class Bot {
             return .32;
         }
         else {
-            return (0.0836 * ll.getGoalDistanceM()) + 0.15;
+            return (0.0836 * ll.getGoalDistanceM()) + 0.165;
         }
     }
 
@@ -204,12 +205,24 @@ public class Bot {
     }
 
     public void sortOff() {
-        webcam.stopStreaming();
+        webcam.closeCameraDevice();
         sortOn = false;
 
     }
     public void sortOn() {
-        webcam.startStreaming(cameraWidth, cameraHeight, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(cameraWidth, cameraHeight, OpenCvCameraRotation.UPRIGHT, OpenCvWebcam.StreamFormat.MJPEG);
+            }
+
+
+            @Override
+            public void onError(int errorCode) {
+
+
+            }
+        });
         sortOn = true;
     }
 
@@ -304,6 +317,22 @@ public class Bot {
             }
         }
 
+        if (sortOn) {
+            if (hasPurpleBall()) {
+                new SequentialCommandGroup(
+                        new PositionDoors(this, false, true),
+                        new WaitCommand(400)
+                ).schedule();
+            }
+            else if (hasGreenBall()) {
+                new SequentialCommandGroup(
+                        new PositionDoors(this, true, false),
+                        new WaitCommand(400)
+                ).schedule();
+            }
+        }
+
+        /*
         tm.debug("right top:", beamBreaks.rightTop);
         tm.debug("right mid:", beamBreaks.rightMid);
         tm.debug("left top:", beamBreaks.intake);
@@ -313,5 +342,6 @@ public class Bot {
         tm.debug("velocity: ", shooterLeft.getVelocity());
         tm.debug("target velocity: ", shooter.getTargetVelocity());
         tm.update();
+         */
     }
 }

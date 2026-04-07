@@ -15,7 +15,7 @@ public class Shoot extends SequentialCommandGroup {
                 new WaitCommand(40),
                 new SetTransferPower(bot, bot.getAdjustedTransferPower()),
                 new WaitCommand(800),
-                new SetTransferPower(bot, .2),
+                new SetTransferPower(bot, .3),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, false)
 

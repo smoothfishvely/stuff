@@ -51,6 +51,7 @@ public class TheDoors extends SubsystemBase {
     }
 
     public void periodic(){
+        /*
         if(sortOn){
             float gain = 5;
             final float[] hsv2 = new float[3];
@@ -78,7 +79,11 @@ public class TheDoors extends SubsystemBase {
                     //whatever we wanna do when nothing is sensed
                 }
             }
+
+
+
         }
+         */
     }
     //right is purple, left is green
 }
