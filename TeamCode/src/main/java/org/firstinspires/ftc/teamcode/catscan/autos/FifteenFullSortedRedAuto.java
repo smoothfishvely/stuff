@@ -33,17 +33,23 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.AutonShoot;
+import org.firstinspires.ftc.teamcode.catscan.commands.AutoSortShoot;
+import org.firstinspires.ftc.teamcode.catscan.commands.CamOn;
+import org.firstinspires.ftc.teamcode.catscan.commands.GetMotif;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
+import org.firstinspires.ftc.teamcode.catscan.commands.SetIntakePower;
+import org.firstinspires.ftc.teamcode.catscan.commands.SetTransferPower;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
+import org.firstinspires.ftc.teamcode.catscan.commands.SortOff;
+import org.firstinspires.ftc.teamcode.catscan.commands.SortOn;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
-public class EighteenRedAuton extends LinearOpMode {
+public class FifteenFullSortedRedAuto extends LinearOpMode {
     public static Pose startPose = new Pose(startCloseXRed, startCloseYRed, Math.toRadians(startHeadingRed)); //fix
     public static Pose shootPose = new Pose(shootXCloseRed, shootYCloseRed, Math.toRadians(shootHeadingRed));
     public static Pose gateIntake = new Pose(gateIntakeXRed, gateIntakeYRed, Math.toRadians(gateIntakeHeadingRed));
@@ -51,126 +57,133 @@ public class EighteenRedAuton extends LinearOpMode {
     public Paths paths;
 
     public static class Paths {
-        public PathChain Path1;
-        public PathChain Path2;
-        public PathChain Path3;
-        public PathChain Path4;
-        public PathChain Path5;
-        public PathChain Path6;
-        public PathChain Path7;
-        public PathChain Path8;
-        public PathChain Path9;
-        public PathChain Path10;
-        public PathChain Path11;
+        public PathChain StartToMotif;
+        public PathChain MotifToShoot;
+        public PathChain ShootToSpike2;
+        public PathChain Spike2ToShoot;
+        public PathChain ShootToGate;
+        public PathChain GateToShoot;
+        public PathChain ShootToFirstSpike;
+        public PathChain MidFirstSpike;
+        public PathChain FirstSpikeToLastShoot;
+        public PathChain ShootToThirdSpike;
+        public PathChain ThirdSpikeToShoot;
+        public PathChain MidThirdSpike;
 
         public Paths(Follower follower) {
-            Path1 = follower.pathBuilder().addPath(
+            StartToMotif = follower.pathBuilder().addPath(
                             new BezierLine(
                                     startPose,
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(startHeadingRed), Math.toRadians(shootHeadingRed))
+                    ).setLinearHeadingInterpolation(Math.toRadians(startHeadingRed), Math.toRadians(100))
 
                     .build();
 
-            Path2 = follower.pathBuilder().addPath(
+            MotifToShoot = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    startPose,
+                                    shootPose
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(100), Math.toRadians(shootHeadingRed))
+
+                    .build();
+
+            ShootToSpike2 = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     shootPose,
-                                    new Pose((144- 51.753), 56.735),
-                                    new Pose((144- 60.821), 59.904),
-                                    new Pose((144- 11), 59.000)
+                                    new Pose(93, 56.735),
+                                    new Pose(84, 59.904),
+                                    new Pose(134.5, 59.000)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(0), .6)
 
                     .build();
 
-            Path3 = follower.pathBuilder().addPath(
+            Spike2ToShoot = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose((144- 11), 59.000),
-                                    new Pose((144- 47.687), 56.696),
+                                    new Pose(134.5, 59.000),
+                                    new Pose(97, 56.696),
                                     shootPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(shootHeadingRed))
 
                     .build();
 
-            Path4 = follower.pathBuilder().addPath(
+            ShootToGate = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     shootPose,
-                                    new Pose((144- 47.320), 57.021),
+                                    new Pose(97, 57.021),
                                     gateIntake
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(gateIntakeHeadingRed))
 
                     .build();
 
-            Path5 = follower.pathBuilder().addPath(
+            GateToShoot = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     gateIntake,
-                                    new Pose((144- 47.302), 57.117),
+                                    new Pose(97, 57.117),
                                     shootPose
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingRed), Math.toRadians(shootHeadingRed))
 
                     .build();
 
-            Path6 = follower.pathBuilder().addPath(
+            ShootToFirstSpike = follower.pathBuilder().addPath(
                             new BezierCurve(
                                     shootPose,
-                                    new Pose((144- 47.318), 56.925),
-                                    gateIntake
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(gateIntakeHeadingRed))
-
-                    .build();
-
-            Path7 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    gateIntake,
-                                    new Pose((144- 47.437), 57.096),
-                                    shootPose
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingRed), Math.toRadians(shootHeadingRed))
-
-                    .build();
-            Path8 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    shootPose,
-                                    new Pose((144- 47.318), 56.925),
-                                    gateIntake
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(gateIntakeHeadingRed))
-
-                    .build();
-
-            Path9 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    gateIntake,
-                                    new Pose((144- 47.437), 57.096),
-                                    shootPose
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingRed), Math.toRadians(shootHeadingRed))
-
-                    .build();
-
-
-
-            Path10 = follower.pathBuilder().addPath(
-                            new BezierCurve(
-                                    shootPose,
-                                    new Pose((144- 53.303), 84.261),
-                                    new Pose((144- 18), 84.256)
+                                    new Pose(93, 84.261),
+                                    new Pose(121, 84.256)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(0), .6)
 
                     .build();
 
-            Path11 = follower.pathBuilder().addPath(
+            MidFirstSpike = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose((144- 18), 84.256),
-                                    new Pose((144- 54), 104.755)
+                                    new Pose(121, 84.256),
+                                    new Pose(128, 84.256)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(32))
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+
+                    .build();
+
+
+            FirstSpikeToLastShoot = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(128, 84.256),
+                                    new Pose(90, 104.755)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(28))
+
+                    .build();
+            ShootToThirdSpike = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    shootPose,
+                                    new Pose(90, 44),
+                                    new Pose(88, 31),
+                                    new Pose(111, 35)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingRed), Math.toRadians(0), .6)
+
+                    .build();
+
+            MidThirdSpike = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(111, 35),
+                                    new Pose(134, 35)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(0))
+
+                    .build();
+
+            ThirdSpikeToShoot = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(134, 35),
+                                    shootPose
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(0), Math.toRadians(shootHeadingRed))
 
                     .build();
         }
@@ -185,15 +198,17 @@ public class EighteenRedAuton extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .3, (1.01 - .3)),
+                        new PositionHood(bot, .28, (1.01 - .28)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
+                        new CamOn(bot),
                         new PositionDoors(bot, false, true)
                 )
         );
         while(opModeInInit()){
             bot.loop();
         }
+        bot.ll.setPipeline(2);
         waitForStart();
         scheduleAuto();
         while(!isStopRequested() && opModeIsActive()){
@@ -207,51 +222,62 @@ public class EighteenRedAuton extends LinearOpMode {
                 new RunCommand(() -> bot.follower.update()),
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path1),
+                                new FollowPathCommand(bot.follower, paths.StartToMotif),
                                 new ActivateShooter(bot, 1100),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new AutonShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.Path2),
-                        new FollowPathCommand(bot.follower, paths.Path3),
-                        new AutonShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.Path4),
-                        new WaitCommand(1000),
+                        new GetMotif(bot),
+                        new FollowPathCommand(bot.follower, paths.MotifToShoot),
+                        new WaitCommand(300),
+                        new Shoot(bot),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path5),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new ReverseIntake(bot)
-                                )
+                                new FollowPathCommand(bot.follower, paths.ShootToSpike2),
+                                new ReverseIntake(bot)
                         ),
-                        new AutonShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.Path6),
-                        new WaitCommand(1300),
+                        new FollowPathCommand(bot.follower, paths.Spike2ToShoot),
+                        new Shoot(bot),
+                        new SortOn(bot),
+                        new SetIntakePower(bot, .9),
+                        new FollowPathCommand(bot.follower, paths.ShootToGate),
+                        new WaitCommand(1100),
+                        new SetIntakePower(bot, 1),
+                        new SetTransferPower(bot, .5),
+                        new FollowPathCommand(bot.follower, paths.GateToShoot),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path7),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new ReverseIntake(bot)
-                                )
+                                new AutoSortShoot(bot),
+                                new WaitCommand(1700)
                         ),
-                        new AutonShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.Path8),
-                        new WaitCommand(1300),
+                        new SortOff(bot),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path9),
-                                new SequentialCommandGroup(
-                                        new WaitCommand(300),
-                                        new ReverseIntake(bot)
-                                )
+                                new FollowPathCommand(bot.follower, paths.ShootToThirdSpike),
+                                new ReverseIntake(bot),
+                                new PositionDoors(bot, true, false)
                         ),
-                        new AutonShoot(bot),
-                        new FollowPathCommand(bot.follower, paths.Path10),
+                        new WaitCommand(300),
+                        new PositionDoors(bot, false, true),
+                        new FollowPathCommand(bot.follower, paths.MidThirdSpike),
+                        new FollowPathCommand(bot.follower, paths.ThirdSpikeToShoot),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path11),
-                                new PositionHood(bot, .3, (1.01 - .3)),
+                                new AutoSortShoot(bot),
+                                new WaitCommand(1700)
+                        ),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(bot.follower, paths.ShootToFirstSpike),
+                                new ReverseIntake(bot),
+                                new PositionDoors(bot, false, true)
+                        ),
+                        new WaitCommand(300),
+                        new PositionDoors(bot, true, false),
+                        new FollowPathCommand(bot.follower, paths.MidFirstSpike),
+                        new ParallelCommandGroup(
+                                new FollowPathCommand(bot.follower, paths.FirstSpikeToLastShoot),
+                                new PositionHood(bot, .28, (1.01 - .28)),
                                 new ActivateShooter(bot, 1050)
                         ),
-                        new AutonShoot(bot)
+                        new ParallelCommandGroup(
+                                new AutoSortShoot(bot),
+                                new WaitCommand(1200)
+                        )
                 )
         );
     }

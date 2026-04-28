@@ -68,11 +68,13 @@ public class Bot {
     private double shooterError = 0;
     private double batteryVoltage = 0;
     private double nominalVoltage = 13.8;
-    private double sigmaTransferPower = .9;
-    private static double sigmaFarTransferPower = .45;
+    private static double sigmaTransferPower = .55;
+    private static double sigmaSortTransferPower = .75;
+
+    private static double sigmaFarTransferPower = .4;
     private double adjustedTransferPower = 0;
     private double adjustedFarTransferPower = 0;
-    private boolean shooting, sortOn = false;
+    private boolean transferOn, shooting, sortOn = false;
     final int cameraWidth = 1280;
     final int cameraHeight = 720;
     Vector velocity = new Vector();
@@ -185,7 +187,7 @@ public class Bot {
             return 1120;
         }
         else if (ll.getGoalDistanceM() > 3){
-            return 1540;
+            return 1500;
         }
         else {
             return (193 * ll.getGoalDistanceM()) + 802;
@@ -193,10 +195,10 @@ public class Bot {
     }
     public double getHoodAngle() {
         if (ll.getGoalDistanceM() > 3 ) {
-            return .32;
+            return .28;
         }
         else {
-            return (0.0836 * ll.getGoalDistanceM()) + 0.165;
+            return (0.08 * ll.getGoalDistanceM()) + 0.15;
         }
     }
 
@@ -205,11 +207,14 @@ public class Bot {
     }
 
     public void sortOff() {
-        webcam.closeCameraDevice();
         sortOn = false;
 
     }
     public void sortOn() {
+        sortOn = true;
+    }
+
+    public void camOn(){
         webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
@@ -223,7 +228,9 @@ public class Bot {
 
             }
         });
-        sortOn = true;
+    }
+    public void camOff(){
+        webcam.closeCameraDevice();
     }
 
     public boolean hasPurpleBall() {
@@ -231,6 +238,13 @@ public class Bot {
     }
     public boolean hasGreenBall() {
         return diddy.hasGreenBall();
+    }
+
+    public void setTransferGoon(boolean diddy) {
+        transferOn = diddy;
+    }
+    public boolean getTransferGoon() {
+        return transferOn;
     }
 
     public void llRelocalize(){ //gets botPose from ll, converts to pedro coordinate system, and sets pose to the result
@@ -277,6 +291,7 @@ public class Bot {
 //      TelemetryUtil.addData("transfer Power: ", getAdjustedTransferPower());
         TelemetryUtil.addData("Velocity: ", shooterRight.getVelocity());
         TelemetryUtil.addData("target velocity: ", shooter.getTargetVelocity());
+        //TelemetryUtil.addData("sort on: ", sortOn);
 
         if (sortOn) {
             TelemetryUtil.addData("Green Data", diddy.debuggingGreen());
@@ -299,6 +314,8 @@ public class Bot {
                 lights.setIndividualPower(.5, .5, .5);
             } else if (beamBreaks.getNumBalls() == 2) {
                 lights.setIndividualPower(.5, .5, 0);
+            } else if (beamBreaks.getNumBalls() == 4) {
+                lights.setIndividualPower(.1, .1, .1);
             } else if (beamBreaks.getNumBalls() == 1) {
                 lights.setIndividualPower(.5, 0, 0);
             } else {
@@ -310,6 +327,9 @@ public class Bot {
                 lights.setIndividualPower(.388, .388, .388);
             } else if (beamBreaks.getNumBalls() == 2) {
                 lights.setIndividualPower(.388, .388, 0);
+            }
+            else if (beamBreaks.getNumBalls() == 4) {
+                    lights.setIndividualPower(.1, .1, .1);
             } else if (beamBreaks.getNumBalls() == 1) {
                 lights.setIndividualPower(.388, 0, 0);
             } else {
@@ -321,13 +341,13 @@ public class Bot {
             if (hasPurpleBall()) {
                 new SequentialCommandGroup(
                         new PositionDoors(this, false, true),
-                        new WaitCommand(400)
+                        new WaitCommand(700)
                 ).schedule();
             }
             else if (hasGreenBall()) {
                 new SequentialCommandGroup(
                         new PositionDoors(this, true, false),
-                        new WaitCommand(400)
+                        new WaitCommand(700)
                 ).schedule();
             }
         }

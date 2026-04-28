@@ -15,11 +15,11 @@ public class   TheShooter extends SubsystemBase {
     public static double ki = 0;
     public static double kd = 0.0012;
     public static double kf = 0.001;
-    public static double newKp = 0.005;
+    public static double newKp = 0.0055;
     public static double newKi = 0;
     public static double newKd = 0;
-    public static double newKs = 0.087;
-    public static double Kv = 0.00045;
+    public static double newKs = 0.125;
+    public static double Kv = 0.0005;
     PIDFController epstein;
     public static double targetVelocity;
     private final ElapsedTime aimTimer = new ElapsedTime();
@@ -36,7 +36,9 @@ public class   TheShooter extends SubsystemBase {
 
     public double calculate() {
             error = targetVelocity - shooterLeft.getVelocity();
-
+            if (error > 100) {
+                return 1;
+            }
             pidIntegral += error * timeDiff;
             pidIntegral = Range.clip(pidIntegral, -1, 1);
 

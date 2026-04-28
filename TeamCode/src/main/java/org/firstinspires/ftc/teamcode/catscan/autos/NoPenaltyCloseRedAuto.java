@@ -43,7 +43,7 @@ import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
-@Autonomous
+//@Autonomous
 public class NoPenaltyCloseRedAuto extends LinearOpMode {
     public static Pose startPose = new Pose(startCloseXRed, startCloseYRed, Math.toRadians(startHeadingRed)); //fix
     public static Pose shootPose = new Pose(shootXCloseRed, shootYCloseRed, Math.toRadians(shootHeadingRed));

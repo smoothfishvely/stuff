@@ -12,9 +12,10 @@ public class AutoShootPGP extends SequentialCommandGroup {
                 new ActivateIntake(bot, false),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, true),
+                new TransferGoon(bot, true),
                 new WaitCommand(50),
                 new SetTransferPower(bot, bot.getAdjustedTransferPower()),
-                new WaitCommand(80),
+                new WaitCommand(50),
                 new SetTransferPower(bot, 0),
                 new PositionSDLeft(bot, true),
                 new PositionSDRight(bot, false),
@@ -26,9 +27,10 @@ public class AutoShootPGP extends SequentialCommandGroup {
                 new PositionSDRight(bot, true),
                 new SetTransferPower(bot, bot.getAdjustedTransferPower()),
                 new WaitCommand(300),
+                new TransferGoon(bot, false),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, false),
-                new SetTransferPower(bot, .3)
+                new SetTransferPower(bot, .5)
         );
         addRequirements(bot.shooter);
     }

@@ -25,7 +25,7 @@ public class ShooterDoors extends SubsystemBase {
         if (!shootR) {
             shootDoorRight.setPosition(.28);
         } else {
-            shootDoorRight.setPosition(.47);
+            shootDoorRight.setPosition(.43);
         }
     }
 }

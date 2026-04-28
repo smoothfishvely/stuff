@@ -27,8 +27,8 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 
 @Configurable
-@TeleOp(name = "4102 STATES blue")
-public class BlueStatesTeleOp extends LinearOpMode {
+//@TeleOp(name = "4102 WORLDS blue")
+public class BlueWorldsTeleOp extends LinearOpMode {
     Pose startPose = new Pose(72, 72, 90);
     double rx;
     boolean shootOn;
@@ -40,6 +40,10 @@ public class BlueStatesTeleOp extends LinearOpMode {
     public double fwdIntPow = 1;
 
     private static int waitms =0;
+    private static double degreeOffsetClose = 1;
+    private static double degreeOffsetFar = 3;
+
+
     private final ElapsedTime loop = new ElapsedTime();
     double timeDiff;
 
@@ -74,6 +78,11 @@ public class BlueStatesTeleOp extends LinearOpMode {
             new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
         });
 
+        gp2.getGamepadButton(GamepadKeys.Button.X).whenPressed(()->{
+            new ActivateShooter(bot, bot.getRizz()).schedule();
+            new PositionHood(bot, bot.getHoodAngle(), (1.01- bot.getHoodAngle())).schedule();
+        });
+
         gp1.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
             intOn = !intOn;
             if(!intOn){
@@ -94,10 +103,10 @@ public class BlueStatesTeleOp extends LinearOpMode {
         gp1.getGamepadButton(GamepadKeys.Button.B).whenPressed(()->{
             if (bot.ll.getGoalDistanceM() > 3 ){
                 new SequentialCommandGroup(
+                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
+                        new WaitCommand(100),
                         new PositionSDLeft(bot, true),
                         new PositionSDRight(bot, true),
-                        new WaitCommand(40),
-                        new SetTransferPower(bot, bot.getAdjustedFarTransferPower()),
                         new WaitCommand(1200),
                         new SetTransferPower(bot, .2),
                         new PositionSDLeft(bot, false),
@@ -142,12 +151,19 @@ public class BlueStatesTeleOp extends LinearOpMode {
 
         gp2.getGamepadButton(GamepadKeys.Button.Y).whenPressed(()->{
             bot.sortOff();
+            bot.camOff();
             sortOn = false;
+            fwdIntPow = 1;
+            new SetIntakePower(bot, fwdIntPow).schedule();
+            new PositionDoors(bot, false , true).schedule();
         });
 
         gp2.getGamepadButton(GamepadKeys.Button.A).whenPressed(()->{
             bot.sortOn();
+            bot.camOn();
             sortOn = true;
+            fwdIntPow = .8;
+            new SetIntakePower(bot, fwdIntPow).schedule();
         });
 
         waitForStart();
@@ -157,6 +173,7 @@ public class BlueStatesTeleOp extends LinearOpMode {
         new SetTransferPower(bot, .3).schedule();
         bot.limelight.pipelineSwitch(1);
         bot.follower.startTeleopDrive();
+        bot.sortOff();
         while(!isStopRequested() && opModeIsActive()){
             double d = Math.max(Math.abs(-gamepad2.left_stick_y) + Math.abs(-gamepad2.left_stick_x * 1.1) + Math.abs(rx), 1);
             double y = (-gamepad2.left_stick_y);
@@ -173,7 +190,21 @@ public class BlueStatesTeleOp extends LinearOpMode {
                 bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            } else {
+            }
+            else if (gamepad2.right_bumper) {
+                rx = -bot.ll.sotmPID();
+                x = (-gamepad2.left_stick_x * .8);
+                y = (-gamepad2.left_stick_y * .7);
+                bot.frontLeft.setPower(y - x - rx);
+                bot.backLeft.setPower(y + x - rx);
+                bot.frontRight.setPower(y + x + rx);
+                bot.backRight.setPower(y - x + rx);
+                bot.backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
+            else {
                 rx = -gamepad2.right_stick_x * .967;
                 bot.frontLeft.setPower(Math.pow((y - x - rx),1) / d);
                 bot.backLeft.setPower(Math.pow((y + x - rx),1) / d);
@@ -184,6 +215,7 @@ public class BlueStatesTeleOp extends LinearOpMode {
                 bot.frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
                 bot.frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
             }
+
             if (gamepad2.aWasPressed()) {
                 bot.kickLeft.setPosition(.1);
                 bot.kickRight.setPosition(.9);
@@ -193,18 +225,19 @@ public class BlueStatesTeleOp extends LinearOpMode {
                 bot.kickRight.setPosition(.25);
             }
 
-            if (sortOn) {
-                fwdIntPow = .8;
+
+
+/*
+            if (bot.beamBreaks.getNumBalls() == 4 && !bot.ll.isResultValid()) {
+                new ReverseIntake(bot).schedule();
             }
-            else {
-                fwdIntPow = 1;
-            }
+   */
             TelemetryUtil.addData("Hood Position: ", bot.hood.getPos());
             //TelemetryUtil.addData("ty: ", bot.ll.getTy());
             TelemetryUtil.addData("tx: ", bot.ll.getTx());
             TelemetryUtil.addData("goal dist: ", bot.ll.getGoalDistanceM());
             //TelemetryUtil.addData("ll aim power: ", -bot.ll.AimPID());
-            //TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
+            TelemetryUtil.addData("num balls: ", bot.beamBreaks.getNumBalls());
 
 
             if (panelsHoodAdjustment) {
@@ -212,11 +245,12 @@ public class BlueStatesTeleOp extends LinearOpMode {
             }
 
             if (bot.ll.getGoalDistanceM() > 3 && bot.ll.getGoalDistanceM() < 5) {
-                bot.ll.setDegreeOffset(4);
+                bot.ll.setDegreeOffset(degreeOffsetFar);
             }
             else {
-                bot.ll.setDegreeOffset(1);
+                bot.ll.setDegreeOffset(degreeOffsetClose);
             }
+
             /*
             if (bot.ll.isResultValid()) {
                 new ActivateShooter(bot, bot.getRizz()).schedule();
@@ -243,9 +277,9 @@ public class BlueStatesTeleOp extends LinearOpMode {
             loop.reset();
 
             TelemetryUtil.addData("loop: ", timeDiff);
-            TelemetryUtil.addData("Sort on? ", sortOn);
-            TelemetryUtil.addData("Intake Current: ", bot.theIntake.getCurrent());
-            TelemetryUtil.addData("Transfer Current: ", bot.theTransfer.getCurrent());
+            //TelemetryUtil.addData("Sort on? ", sortOn);
+            //TelemetryUtil.addData("Intake Current: ", bot.theIntake.getCurrent());
+            //TelemetryUtil.addData("Transfer Current: ", bot.theTransfer.getCurrent());
 
 
             //TelemetryUtil.addData("transfer on: ", transferOn);

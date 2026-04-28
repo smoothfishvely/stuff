@@ -19,4 +19,14 @@ public class TheLights extends SubsystemBase {
         leftLED.setPosition(leftPower);
     }
 
+    public void celebration(){
+        for(int v = 0; v < 3; v++) {
+            for (double i = 0; i < 1; i += .02) {
+                setIndividualPower(i, i, i);
+            }
+            for(double i = 1; i > 0; i -= .02){
+                setIndividualPower(i, i, i);
+            }
+        }
+    }
 }

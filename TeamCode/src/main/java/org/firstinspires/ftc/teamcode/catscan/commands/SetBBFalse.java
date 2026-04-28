@@ -4,16 +4,15 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
-public class SortOn extends InstantCommand {
+public class SetBBFalse extends InstantCommand {
     private Bot bot;
 
-    public SortOn(Bot bot) {
+    public SetBBFalse(Bot bot) {
         this.bot = bot;
     }
 
     @Override
     public void initialize() {
-        bot.sortOn();
+        bot.beamBreaks.setFalse();
     }
-
 }

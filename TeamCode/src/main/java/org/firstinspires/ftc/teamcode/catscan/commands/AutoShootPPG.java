@@ -11,6 +11,7 @@ public class AutoShootPPG extends SequentialCommandGroup {
         addCommands(
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, true),
+                new TransferGoon(bot, true),
                 new WaitCommand(50),
                 new SetTransferPower(bot, 1),
                 new ActivateIntake(bot, true),
@@ -21,7 +22,8 @@ public class AutoShootPPG extends SequentialCommandGroup {
                 new WaitCommand(400),
                 new SetTransferPower(bot, 1),
                 new WaitCommand(500),
-                new SetTransferPower(bot, .3),
+                new SetTransferPower(bot, .5),
+                new TransferGoon(bot, false),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, false)
         );

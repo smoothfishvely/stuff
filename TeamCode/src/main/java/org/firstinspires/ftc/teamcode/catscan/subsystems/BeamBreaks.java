@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.catscan.subsystems;
 
 import com.qualcomm.robotcore.hardware.DigitalChannel;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.command.SubsystemBase;
+import com.seattlesolvers.solverslib.hardware.SensorDigitalDevice;
 
 public class BeamBreaks extends SubsystemBase {
     private DigitalChannel rightTopBB, rightMidBB, intakeBB, bottomBB;
@@ -10,10 +12,11 @@ public class BeamBreaks extends SubsystemBase {
     public boolean rightMid = false;
     public boolean intake = false;
     public boolean bottom = false;
+    private final ElapsedTime timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
 
 
 
-    public boolean realRightTop, realRightMid, realLeftTop, realBottom;
+    public boolean realRightTop, realRightMid, realIntake, realBottom;
     public BeamBreaks (DigitalChannel rightTopBB, DigitalChannel rightMidBB,
                        DigitalChannel intakeBB, DigitalChannel bottomBB) {
 
@@ -25,6 +28,8 @@ public class BeamBreaks extends SubsystemBase {
         this.rightMidBB.setMode(DigitalChannel.Mode.INPUT);
         this.intakeBB.setMode(DigitalChannel.Mode.INPUT);
         this.bottomBB.setMode(DigitalChannel.Mode.INPUT);
+
+
     }
 
     public int getNumBalls() {
@@ -44,6 +49,7 @@ public class BeamBreaks extends SubsystemBase {
         realRightTop = false;
         realRightMid = false;
         realBottom = false;
+        realIntake = false;
     }
 
     @Override
@@ -57,21 +63,25 @@ public class BeamBreaks extends SubsystemBase {
         if (rightTop) {
             realRightTop = true;
         }
-        if (rightMid && realRightTop) {
+        if (rightMid && rightTop) {
             realRightMid = true;
         }
-        if (bottom && realRightMid && realRightTop) {
+        if (bottom && rightMid && rightTop) {
             realBottom = true;
+        }
+        if (intake && bottom && rightMid && rightTop) {
+            realIntake = true;
         }
 
         numBalls = 0;
-        if (rightTop) numBalls++;
-        if (rightMid) numBalls++;
+        if (realRightTop) numBalls++;
+        if (realRightMid) numBalls++;
         if (bottom) numBalls++;
+        if (intake) numBalls++;
 
         //TelemetryUtil.addData("right top:", rightTop);
         //TelemetryUtil.addData("right mid:", rightMid);
-        //TelemetryUtil.addData("left top:", intake);
+        //TelemetryUtil.addData("intake:", intake);
         //TelemetryUtil.addData("bottom:", bottom);
     }
 }

@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.shootYC
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startHeadingBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseXBlue;
 import static org.firstinspires.ftc.teamcode.catscan.autos.AutoConstants.startCloseYBlue;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -23,7 +24,8 @@ import com.seattlesolvers.solverslib.command.WaitCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.ActivateShooter;
-import org.firstinspires.ftc.teamcode.catscan.commands.AutoSort;
+import org.firstinspires.ftc.teamcode.catscan.commands.AutoSortShoot;
+import org.firstinspires.ftc.teamcode.catscan.commands.CamOn;
 import org.firstinspires.ftc.teamcode.catscan.commands.GetMotif;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionDoors;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionHood;
@@ -31,11 +33,12 @@ import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDLeft;
 import org.firstinspires.ftc.teamcode.catscan.commands.PositionSDRight;
 import org.firstinspires.ftc.teamcode.catscan.commands.ReverseIntake;
 import org.firstinspires.ftc.teamcode.catscan.commands.Shoot;
-import org.firstinspires.ftc.teamcode.catscan.commands.SlowShoot;
+import org.firstinspires.ftc.teamcode.catscan.commands.SortOff;
+import org.firstinspires.ftc.teamcode.catscan.commands.SortOn;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 import org.firstinspires.ftc.teamcode.catscan.subsystems.TelemetryUtil;
 @Autonomous
-public class FifteenSortedBludAuton extends LinearOpMode {
+public class FifteenHalfSortBludAuton extends LinearOpMode {
     public static Pose startPose = new Pose(startCloseXBlue, startCloseYBlue, Math.toRadians(startHeadingBlue)); //fix
     public static Pose shootPose = new Pose(shootCloseXBlue, shootYCloseBlue, Math.toRadians(shootHeadingBlue));
     public static Pose gateIntake = new Pose(gateIntakeXBlue, gateIntakeYBlue, Math.toRadians(gateIntakeHeadingBlue));
@@ -43,7 +46,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
     public Paths paths;
 
     public static class Paths {
-        public PathChain StartToMotif;
+        public PathChain StartToShoot;
         public PathChain MotifToShoot;
         public PathChain ShootToSpike2;
         public PathChain Spike2ToShoot;
@@ -55,25 +58,17 @@ public class FifteenSortedBludAuton extends LinearOpMode {
         public PathChain ShootToThirdSpike;
         public PathChain ThirdSpikeToShoot;
         public PathChain MidThirdSpike;
-
+        public PathChain GateToMotif;
         public Paths(Follower follower) {
-            StartToMotif = follower.pathBuilder().addPath(
+            StartToShoot = follower.pathBuilder().addPath(
                             new BezierLine(
                                     startPose,
                                     shootPose
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(startHeadingBlue), Math.toRadians(80))
+                    ).setLinearHeadingInterpolation(Math.toRadians(startHeadingBlue), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
-            MotifToShoot = follower.pathBuilder().addPath(
-                            new BezierLine(
-                                    startPose,
-                                    shootPose
-                            )
-                    ).setLinearHeadingInterpolation(Math.toRadians(80), Math.toRadians(shootHeadingBlue))
-
-                    .build();
 
             ShootToSpike2 = follower.pathBuilder().addPath(
                             new BezierCurve(
@@ -103,6 +98,25 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                                     gateIntake
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(gateIntakeHeadingBlue))
+
+                    .build();
+
+            GateToMotif = follower.pathBuilder().addPath(
+                            new BezierCurve(
+                                    gateIntake,
+                                    new Pose(47.302, 57.117),
+                                    new Pose(50, 70)
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(gateIntakeHeadingBlue), Math.toRadians(90))
+
+                    .build();
+
+            MotifToShoot = follower.pathBuilder().addPath(
+                            new BezierLine(
+                                    new Pose(50,70),
+                                    shootPose
+                            )
+                    ).setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(shootHeadingBlue))
 
                     .build();
 
@@ -141,7 +155,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                                     new Pose(16, 84.256),
                                     new Pose(54, 104.755)
                             )
-                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(149))
+                    ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(152))
 
                     .build();
             ShootToThirdSpike = follower.pathBuilder().addPath(
@@ -149,7 +163,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                                     shootPose,
                                     new Pose(54.303, 44),
                                     new Pose(52, 31),
-                                    new Pose(32, 35)
+                                    new Pose(33, 35)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(shootHeadingBlue), Math.toRadians(180), .6)
 
@@ -157,7 +171,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
 
             MidThirdSpike = follower.pathBuilder().addPath(
                             new BezierLine(
-                                    new Pose(32, 35),
+                                    new Pose(33, 35),
                                     new Pose(10, 35)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
@@ -172,6 +186,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(shootHeadingBlue))
 
                     .build();
+
         }
     }
 
@@ -187,6 +202,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                         new PositionHood(bot, .28, (1.01 - .28)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
+                        new CamOn(bot),
                         new PositionDoors(bot, false, true)
                 )
         );
@@ -207,49 +223,35 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                 new RunCommand(() -> bot.follower.update()),
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.StartToMotif),
-                                new ActivateShooter(bot, 1080),//on
+                                new FollowPathCommand(bot.follower, paths.StartToShoot),
+                                new ActivateShooter(bot, 1100),//on
                                 new ActivateIntake(bot, true)
                         ),
-                        new GetMotif(bot),
-                        new FollowPathCommand(bot.follower, paths.MotifToShoot),
-                        new WaitCommand(300),
-                        new ParallelCommandGroup(
-                                new AutoSort(bot),
-                                new WaitCommand(1200)
-                        ),
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.ShootToSpike2),
-                                new ReverseIntake(bot)
-                                ),
+                        new Shoot(bot),
+                        new FollowPathCommand(bot.follower, paths.ShootToSpike2),
                         new FollowPathCommand(bot.follower, paths.Spike2ToShoot),
                         new Shoot(bot),
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.ShootToGate),
-                                new ReverseIntake(bot)
-                        ),
-                        new WaitCommand(1500),
+                        new FollowPathCommand(bot.follower, paths.ShootToGate),
+                        new WaitCommand(1100),
+                        new FollowPathCommand(bot.follower, paths.GateToMotif),
+                        new GetMotif(bot),
+                        new FollowPathCommand(bot.follower, paths.MotifToShoot),
+                        new Shoot(bot),
+                        new SortOn(bot),
+                        new FollowPathCommand(bot.follower, paths.ShootToGate),
+                        new WaitCommand(1600),
                         new FollowPathCommand(bot.follower, paths.GateToShoot),
-                        new SlowShoot(bot),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.ShootToThirdSpike),
-                                new ReverseIntake(bot),
-                                new PositionDoors(bot, true, false)
+                                new AutoSortShoot(bot),
+                                new WaitCommand(1700)
                         ),
-                        new WaitCommand(500),
-                        new PositionDoors(bot, false, true),
-                        new FollowPathCommand(bot.follower, paths.MidThirdSpike),
-                        new FollowPathCommand(bot.follower, paths.ThirdSpikeToShoot),
-                        new ParallelCommandGroup(
-                                new AutoSort(bot),
-                                new WaitCommand(1200)
-                        ),
+                        new SortOff(bot),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.ShootToFirstSpike),
                                 new ReverseIntake(bot),
                                 new PositionDoors(bot, false, true)
                         ),
-                        new WaitCommand(1000),
+                        new WaitCommand(300),
                         new PositionDoors(bot, true, false),
                         new FollowPathCommand(bot.follower, paths.MidFirstSpike),
                         new ParallelCommandGroup(
@@ -258,7 +260,7 @@ public class FifteenSortedBludAuton extends LinearOpMode {
                                 new ActivateShooter(bot, 1050)
                         ),
                         new ParallelCommandGroup(
-                                new AutoSort(bot),
+                                new AutoSortShoot(bot),
                                 new WaitCommand(1200)
                         )
                 )

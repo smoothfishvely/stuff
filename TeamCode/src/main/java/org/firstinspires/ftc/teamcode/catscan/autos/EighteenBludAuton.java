@@ -198,41 +198,47 @@ public class EighteenBludAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path1),
-                                new ActivateShooter(bot, 1110),//on
+                                new ActivateShooter(bot, 1100),//on
                                 new ActivateIntake(bot, true)
                         ),
                         new AutonShoot(bot),
-                        new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path2),
-                                new ReverseIntake(bot)
-                                ),
+                        new FollowPathCommand(bot.follower, paths.Path2),
                         new FollowPathCommand(bot.follower, paths.Path3),
                         new AutonShoot(bot),
+                        new FollowPathCommand(bot.follower, paths.Path4),
+                        new WaitCommand(1000),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path4),
-                                new ReverseIntake(bot)
+                                new FollowPathCommand(bot.follower, paths.Path5),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(600),
+                                        new ReverseIntake(bot)
+                                )
                         ),
-                        new WaitCommand(1200),
-                        new FollowPathCommand(bot.follower, paths.Path5),
                         new AutonShoot(bot),
+                        new FollowPathCommand(bot.follower, paths.Path6),
+                        new WaitCommand(1300),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path6),
-                                new ReverseIntake(bot)
+                                new FollowPathCommand(bot.follower, paths.Path7),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(600),
+                                        new ReverseIntake(bot)
+                                )
                         ),
-                        new WaitCommand(1600),
-                        new FollowPathCommand(bot.follower, paths.Path7),
                         new AutonShoot(bot),
+                        new FollowPathCommand(bot.follower, paths.Path8),
+                        new WaitCommand(1300),
                         new ParallelCommandGroup(
-                                new FollowPathCommand(bot.follower, paths.Path8),
-                                new ReverseIntake(bot)
+                                new FollowPathCommand(bot.follower, paths.Path9),
+                                new SequentialCommandGroup(
+                                        new WaitCommand(600),
+                                        new ReverseIntake(bot)
+                                )
                         ),
-                        new WaitCommand(1600),
-                        new FollowPathCommand(bot.follower, paths.Path9),
                         new AutonShoot(bot),
                         new FollowPathCommand(bot.follower, paths.Path10),
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.Path11),
-                                new PositionHood(bot, .28, (1.01 - .28)),
+                                new PositionHood(bot, .29, (1.01 - .29)),
                                 new ActivateShooter(bot, 1050)
                         ),
                         new AutonShoot(bot)

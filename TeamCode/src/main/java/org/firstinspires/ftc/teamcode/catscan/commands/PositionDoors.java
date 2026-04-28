@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.catscan.commands;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
-import org.firstinspires.ftc.teamcode.catscan.teleop.BlueStatesTeleOp;
 
 public class PositionDoors extends InstantCommand {
     private Bot bot;

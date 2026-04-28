@@ -27,19 +27,22 @@ public class TheLimelight extends SubsystemBase {
             new YawPitchRollAngles(AngleUnit.DEGREES, 0,0,0,0));
 
     private static double aimTolerance = 0.67;
-    private static double kp = .02;
+    private static double kp = 0.014;
     private static double ki = 0;
-    private static double kd = .0025;
-    private static double kf = 0.01;
-    PIDFController pidf = new PIDFController(kp,ki,kd,kf);
+    private static double kd = 0.0025;
+    private static double kf = 0.06;
 
+    private static double kp2 = 0.016;
+    private static double ki2 = 0;
+    private static double kd2 = 0.0005;
+    private static double kf2 = 0.05;
     double lastVel = 1300;
     private double aimIntegral = 0; //not a pid value
     private double aimLastError = 0;
     public static int colorOffsetSig = -1; // 1 for red, -1 for blue
     LLResult result;
 
-    private static double degreeOffset = 1;
+    private static double degreeOffset = -5;
     private final ElapsedTime aimTimer = new ElapsedTime();
     double timeDiff;
     private double error = 0;
@@ -73,15 +76,20 @@ public class TheLimelight extends SubsystemBase {
 
             double aimDerivative = (error - aimLastError) / timeDiff;
             aimLastError = error;
-
+            double output;
             //checks for tolerance
             if (Math.abs(error) < aimTolerance) {
                 aimIntegral = 0;
                 return 0;
             }
-
-            double output = kp * error + (ki * aimIntegral)
-                    + (kd * aimDerivative) + (kf * Math.signum(error));
+            else if (Math.abs(error) < 6) {
+                output = kp2 * error + (ki2 * aimIntegral)
+                        + (kd2 * aimDerivative) + (kf2 * Math.signum(error));
+            }
+            else {
+                output = kp * error + (ki * aimIntegral)
+                        + (kd * aimDerivative) + (kf * Math.signum(error));
+            }
 
             output = Range.clip(output, -1, 1);// limits within -1, 1
 

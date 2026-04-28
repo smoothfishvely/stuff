@@ -96,7 +96,7 @@ public class FarBlueAuton extends LinearOpMode {
                             new BezierCurve(
                                     shootPose,
                                     new Pose(59.7, 10),
-                                    new Pose(14, 11.5)
+                                    new Pose(11.5, 11.5)
                             )
                     ).setLinearHeadingInterpolation(Math.toRadians(180), Math.toRadians(180))
 
@@ -113,7 +113,7 @@ public class FarBlueAuton extends LinearOpMode {
 
             CornerToShootPath = follower.pathBuilder().addPath(
                             new BezierCurve(
-                                    new Pose(14, 11.5),
+                                    new Pose(11.5, 11.5),
                                     new Pose(38, 21),
                                     shootPose
                             )
@@ -141,7 +141,7 @@ public class FarBlueAuton extends LinearOpMode {
         paths = new Paths(bot.follower);
         CommandScheduler.getInstance().schedule(
                 new ParallelCommandGroup(
-                        new PositionHood(bot, .3, (1.01 - .3)),
+                        new PositionHood(bot, .28, (1.01 - .28)),
                         new PositionSDLeft(bot, false),
                         new PositionSDRight(bot, false),
                         new PositionDoors(bot, false, true)
@@ -164,7 +164,7 @@ public class FarBlueAuton extends LinearOpMode {
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
                                 new FollowPathCommand(bot.follower, paths.startToShoot),
-                                new ActivateShooter(bot, 1590),//on
+                                new ActivateShooter(bot, 1500),//on
                                 new ActivateIntake(bot, true)
                         ),
                         new WaitCommand(1300),

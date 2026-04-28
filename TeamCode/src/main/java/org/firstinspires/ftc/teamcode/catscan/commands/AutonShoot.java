@@ -11,11 +11,12 @@ public class AutonShoot extends SequentialCommandGroup {
         addCommands(
                 new PositionSDLeft(bot, true),
                 new PositionSDRight(bot, true),
-                new ActivateIntake(bot, true),
-                new WaitCommand(75),
+                new SetIntakePower(bot,0.8),
+                new WaitCommand(10),
                 new SetTransferPower(bot, bot.getAdjustedTransferPower()),
                 new WaitCommand(500),
                 new SetTransferPower(bot, .2),
+                new SetIntakePower(bot,1),
                 new PositionSDLeft(bot, false),
                 new PositionSDRight(bot, false)
 

@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 public class ReverseIntake extends SequentialCommandGroup {
     public ReverseIntake(Bot bot){
         addCommands(
-                new SetIntakePower(bot, -1),
+                new SetIntakePower(bot, -.4),
                 new WaitCommand(100),
                 new SetIntakePower(bot, 1)
         );

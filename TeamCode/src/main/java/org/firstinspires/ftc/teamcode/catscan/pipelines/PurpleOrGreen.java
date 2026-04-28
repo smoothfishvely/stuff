@@ -32,10 +32,10 @@ public class PurpleOrGreen extends OpenCvPipeline {
     //I just picked some random values with the colorwheel for a lower and upper bound for green
     //but feel free to change these if its not picking up the ball - Keir
     Scalar lowerGreen = new Scalar(60, 70, 70);
-    Scalar upperGreen = new Scalar(90, 255, 255);
+    Scalar upperGreen = new Scalar(100, 255, 255);
 
     Scalar lowerPurple = new Scalar(130, 50, 50);
-    Scalar upperPurple = new Scalar(160, 255, 255);
+    Scalar upperPurple = new Scalar(180, 255, 255);
 
 
     @Override

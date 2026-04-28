@@ -4,16 +4,14 @@ import com.seattlesolvers.solverslib.command.InstantCommand;
 
 import org.firstinspires.ftc.teamcode.catscan.subsystems.Bot;
 
-public class SortOn extends InstantCommand {
+public class CamOff extends InstantCommand {
     private Bot bot;
-
-    public SortOn(Bot bot) {
+    public CamOff(Bot bot){
         this.bot = bot;
     }
 
     @Override
     public void initialize() {
-        bot.sortOn();
+        bot.camOff();
     }
-
 }
